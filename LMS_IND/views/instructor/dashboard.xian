@@ -1,0 +1,156 @@
+{{> app_start}}
+
+<section class="relative mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white px-5 py-6 sm:px-7 sm:py-7">
+  <div class="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-brand-100/60 blur-2xl"></div>
+  <div class="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+    <div>
+      <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-600">Teaching workspace</p>
+      <h1 class="mt-1 text-2xl font-extrabold tracking-tight text-navy-900 sm:text-[1.7rem]">Instructor dashboard</h1>
+      <p class="mt-1 text-[13px] text-slate-500">Monitor course performance, learner progress, and questions awaiting your approval.</p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a href="/instructor/live" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy-900 transition hover:border-brand-200 hover:bg-brand-50/40">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+        Live classroom
+      </a>
+      <a href="/instructor/courses/new" class="ui-btn ui-btn-primary !py-2.5 text-[13px]">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+        New course
+      </a>
+    </div>
+  </div>
+</section>
+
+{{#if stats.pendingQuestions}}
+  <div class="mb-5 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+    <div class="flex items-start gap-3">
+      <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-700">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      </span>
+      <div>
+        <p class="text-sm font-semibold text-amber-900">{{stats.pendingQuestions}} generated questions are pending review</p>
+        <p class="mt-0.5 text-xs text-amber-700">AI-assisted questions cannot be used in a knowledge check until you approve them.</p>
+      </div>
+    </div>
+    <a href="{{pendingReviewLink}}" class="shrink-0 rounded-lg bg-amber-600 px-3.5 py-2 text-xs font-semibold text-white transition hover:bg-amber-700">Review question banks</a>
+  </div>
+{{/if}}
+
+<div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex items-center justify-between">
+      <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">My courses</p>
+      <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></span>
+    </div>
+    <p class="mt-3 text-3xl font-extrabold text-navy-900">{{stats.courses}}</p>
+    <p class="mt-1 text-xs text-slate-400">{{stats.completedCourses}} course completions</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex items-center justify-between">
+      <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Learners</p>
+      <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-50 text-indigo-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg></span>
+    </div>
+    <p class="mt-3 text-3xl font-extrabold text-navy-900">{{stats.learners}}</p>
+    <p class="mt-1 text-xs text-slate-400">{{stats.activeLearners}} active in the last 30 days</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex items-center justify-between">
+      <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Average score</p>
+      <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h-2a2 2 0 01-2-2z" /></svg></span>
+    </div>
+    <p class="mt-3 text-3xl font-extrabold text-navy-900">{{stats.avgScore}}%</p>
+    <p class="mt-1 text-xs text-slate-400">{{stats.failedAttempts}} unsuccessful attempts</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex items-center justify-between">
+      <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Completion rate</p>
+      <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg></span>
+    </div>
+    <p class="mt-3 text-3xl font-extrabold text-navy-900">{{stats.completionRate}}%</p>
+    <p class="mt-1 text-xs text-slate-400">{{stats.pendingQuestions}} questions awaiting approval</p>
+  </div>
+</div>
+
+<div class="grid gap-6 xl:grid-cols-3">
+  <section class="xl:col-span-2">
+    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <h2 class="text-sm font-bold text-navy-900">Course performance</h2>
+        <a href="/instructor/courses" class="text-xs font-semibold text-brand-600 hover:text-brand-700">Manage courses</a>
+      </div>
+      {{#if courses}}
+        <div class="divide-y divide-slate-100">
+          {{#each courses}}
+            <div class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center">
+              <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-xs font-bold text-white" style="background-color: {{course.accent}}">{{initials course.title}}</span>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2">
+                  <a href="/instructor/courses/{{course.id}}/builder" class="truncate text-sm font-semibold text-navy-900 hover:text-brand-600">{{course.title}}</a>
+                  <span class="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide
+                    {{#if (eq course.status "published")}}bg-emerald-50 text-emerald-700{{else if (eq course.status "archived")}}bg-slate-100 text-slate-500{{else}}bg-amber-50 text-amber-700{{/if}}">{{course.status}}</span>
+                </div>
+                <div class="mt-1.5 flex items-center gap-3 text-[11px] text-slate-400">
+                  <span>{{enrolled}} learners</span>
+                  <span>·</span>
+                  <span>{{completed}} completed</span>
+                  <span>·</span>
+                  <span>{{avg}}% avg progress</span>
+                </div>
+              </div>
+              <div class="flex shrink-0 items-center gap-2">
+                <a href="/instructor/courses/{{course.id}}/learners" class="rounded-lg border border-slate-300 px-3 py-1.5 text-[11px] font-semibold text-navy-900 transition hover:bg-slate-50">Learners</a>
+                <a href="/instructor/courses/{{course.id}}/builder" class="rounded-lg bg-brand-600 px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-brand-700">Builder</a>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="px-5 py-12 text-center">
+          <p class="text-sm text-slate-500">You have not created a course yet.</p>
+          <a href="/instructor/courses/new" class="mt-3 inline-flex text-sm font-semibold text-brand-600">Create your first course →</a>
+        </div>
+      {{/if}}
+    </div>
+  </section>
+
+  <aside class="space-y-6">
+    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <h2 class="text-sm font-bold text-navy-900">Needs attention</h2>
+        <a href="/instructor/learners" class="text-xs font-semibold text-brand-600">All learners</a>
+      </div>
+      {{#if struggling}}
+        <div class="divide-y divide-slate-100">
+          {{#each struggling}}
+            <div class="px-5 py-3">
+              <div class="flex items-center justify-between gap-2">
+                <p class="truncate text-xs font-semibold text-navy-900">{{#if learner}}{{learner.name}}{{else}}Learner #{{userId}}{{/if}}</p>
+                <span class="shrink-0 rounded-full bg-rose-50 px-2 py-0.5 text-[9px] font-bold text-rose-700">{{percent}}%</span>
+              </div>
+              <p class="mt-0.5 truncate text-[10px] text-slate-400">{{course.title}}</p>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="px-5 py-8 text-center text-xs text-slate-500">No learners below 40% progress.</p>
+      {{/if}}
+    </section>
+
+    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Authoring checklist</p>
+      <ul class="mt-3 space-y-2.5 text-xs text-slate-500">
+        <li class="flex gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>Upload a module and review the auto-converted webpage.</li>
+        <li class="flex gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>Generate 20–50 questions, then approve at least {{#if courses.[0]}}{{courses.[0].course.questionCount}}{{else}}5{{/if}}.</li>
+        <li class="flex gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>Publish the lesson; publishing is blocked until enough questions are approved.</li>
+        <li class="flex gap-2"><span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>Publish the course from course settings.</li>
+      </ul>
+    </section>
+
+    <section class="rounded-2xl bg-navy-900 p-5 text-white">
+      <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-300">AI assistance policy</p>
+      <p class="mt-2 text-sm leading-relaxed text-slate-300">Generated questions are drafts. They remain pending and cannot enter a knowledge check until you explicitly approve them. You can edit every prompt, option, and answer first.</p>
+    </section>
+  </aside>
+</div>
+
+{{> app_end}}

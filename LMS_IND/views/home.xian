@@ -1,0 +1,380 @@
+{{> head}}
+<body class="min-h-full bg-[#f4f8fc] text-slate-700 antialiased">
+  <header class="sticky top-0 z-40 border-b border-slate-200/80 bg-white/95 backdrop-blur">
+    <div class="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-4 px-5 sm:px-8">
+      <a href="/" class="flex items-center gap-3">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-500 shadow-lg shadow-brand-500/20">
+          <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+        </span>
+        <span>
+          <span class="block text-[15px] font-extrabold leading-tight tracking-tight text-navy-900">Vanguard Learning</span>
+          <span class="mt-0.5 block text-[9px] font-bold uppercase tracking-[0.16em] text-slate-400">Integrated LMS</span>
+        </span>
+      </a>
+
+      <nav class="hidden items-center gap-1 lg:flex">
+        <a href="#platform" class="rounded-lg px-3.5 py-2 text-[13px] font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-navy-900">Platform</a>
+        <a href="#how-it-works" class="rounded-lg px-3.5 py-2 text-[13px] font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-navy-900">How it works</a>
+        <a href="#for-teams" class="rounded-lg px-3.5 py-2 text-[13px] font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-navy-900">For teams</a>
+        <a href="/verify" class="rounded-lg px-3.5 py-2 text-[13px] font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-navy-900">Verify certificate</a>
+      </nav>
+
+      <div class="flex items-center gap-2">
+        <a href="/login" class="hidden rounded-lg px-3.5 py-2 text-[13px] font-semibold text-navy-900 transition hover:bg-slate-50 sm:block">Sign in</a>
+        <a href="/register" class="ui-btn ui-btn-primary !px-4 !py-2.5 text-[13px]">Get started</a>
+        <details class="relative lg:hidden">
+          <summary class="flex h-9 w-9 cursor-pointer list-none items-center justify-center rounded-lg border border-slate-200 text-slate-600 [&::-webkit-details-marker]:hidden" aria-label="Open navigation">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" /></svg>
+          </summary>
+          <div class="absolute right-0 top-12 w-56 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
+            <a href="#platform" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50">Platform</a>
+            <a href="#how-it-works" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50">How it works</a>
+            <a href="#for-teams" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50">For teams</a>
+            <a href="/verify" class="block rounded-lg px-3 py-2.5 text-sm font-medium text-slate-600 hover:bg-slate-50">Verify certificate</a>
+            <a href="/login" class="mt-1 block rounded-lg border-t border-slate-100 px-3 py-2.5 text-sm font-semibold text-brand-600 hover:bg-brand-50">Sign in</a>
+          </div>
+        </details>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero-shell relative overflow-hidden border-b border-slate-200/70">
+      <div class="pointer-events-none absolute inset-0 hero-grid"></div>
+      <div class="relative mx-auto grid max-w-7xl items-center gap-14 px-5 py-16 sm:px-8 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:py-24">
+        <div>
+          <span class="eyebrow">
+            <span class="h-1.5 w-1.5 rounded-full bg-brand-500"></span>
+            Enterprise learning, simplified
+          </span>
+          <h1 class="mt-6 max-w-xl text-[2.65rem] font-extrabold leading-[1.08] tracking-[-0.035em] text-navy-900 sm:text-5xl lg:text-[3.4rem]">
+            Build a team that<br class="hidden sm:block" />
+            <span class="text-brand-500">never stops learning.</span>
+          </h1>
+          <p class="mt-6 max-w-xl text-[15px] leading-relaxed text-slate-600 sm:text-base">
+            One connected platform to train, assess, and certify your people. Turn module uploads into
+            engaging lessons, verify every skill with randomized checks, and keep learning and billing in sync.
+          </p>
+          <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+            <a href="/register" class="ui-btn ui-btn-primary !px-6 !py-3.5">
+              Start learning free
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            </a>
+            <a href="/login" class="ui-btn ui-btn-secondary !px-6 !py-3.5">
+              Sign in to your workspace
+            </a>
+          </div>
+
+          <dl class="mt-10 grid max-w-lg grid-cols-3 gap-6 border-t border-slate-200/90 pt-6">
+            <div>
+              <dd class="text-xl font-extrabold tracking-tight text-navy-900">5 <span class="text-sm font-semibold text-slate-500">random</span></dd>
+              <dt class="mt-1 text-[11px] font-medium text-slate-500">Questions per check</dt>
+            </div>
+            <div>
+              <dd class="text-xl font-extrabold tracking-tight text-navy-900">80%</dd>
+              <dt class="mt-1 text-[11px] font-medium text-slate-500">Default pass mark</dt>
+            </div>
+            <div>
+              <dd class="text-xl font-extrabold tracking-tight text-navy-900">100%</dd>
+              <dt class="mt-1 text-[11px] font-medium text-slate-500">Server-side grading</dt>
+            </div>
+          </dl>
+        </div>
+
+        <div class="relative mx-auto w-full min-w-0 max-w-[480px] lg:max-w-none">
+          <p class="relative z-10 mb-3 text-center text-[10px] font-bold uppercase tracking-[0.16em] text-slate-400 lg:text-left">Product preview</p>
+          <div class="absolute -inset-6 rounded-[2.5rem] bg-brand-100/50 blur-2xl"></div>
+          <div class="relative rounded-[1.75rem] border border-slate-200 bg-white p-3 shadow-float">
+            <div class="rounded-[1.35rem] border border-slate-100 bg-[#f8fbff] p-4 sm:p-5">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                  <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-500 text-[10px] font-bold text-white">JD</span>
+                  <div>
+                    <p class="text-[11px] font-bold text-navy-900">My learning</p>
+                    <p class="text-[10px] text-slate-400">Welcome back, Juan</p>
+                  </div>
+                </div>
+                <span class="rounded-full bg-emerald-50 px-2 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">On track</span>
+              </div>
+
+              <div class="mt-4 rounded-2xl bg-brand-500 p-4 text-white shadow-lg shadow-brand-500/20 sm:p-5">
+                <div class="flex items-start justify-between gap-3">
+                  <div>
+                    <p class="text-[9px] font-bold uppercase tracking-[0.16em] text-brand-100">Continue learning</p>
+                    <p class="mt-1.5 text-[15px] font-bold leading-snug">Data Privacy Essentials</p>
+                    <p class="mt-1 text-[10px] text-brand-100">Lesson 3 of 6 · Handling personal data</p>
+                  </div>
+                  <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/15">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /></svg>
+                  </span>
+                </div>
+                <div class="mt-4 h-1.5 overflow-hidden rounded-full bg-white/20">
+                  <div class="h-full w-[58%] rounded-full bg-white"></div>
+                </div>
+                <div class="mt-2 flex items-center justify-between text-[10px] text-brand-100">
+                  <span>58% complete</span>
+                  <span>2h 10m left</span>
+                </div>
+              </div>
+
+              <div class="mt-3 rounded-2xl border border-slate-200 bg-white p-4">
+                <div class="flex items-center justify-between">
+                  <p class="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">Knowledge check</p>
+                  <span class="text-[9px] font-bold text-slate-400">2 / 5</span>
+                </div>
+                <p class="mt-2 text-[12px] font-semibold leading-snug text-navy-900">Which principle limits data collection to what is necessary?</p>
+                <div class="mt-3 space-y-1.5">
+                  <div class="flex items-center gap-2 rounded-lg border border-slate-200 px-2.5 py-2 text-[11px] text-slate-500"><span class="flex h-4 w-4 items-center justify-center rounded-full bg-slate-100 text-[9px] font-bold">A</span> Data portability</div>
+                  <div class="flex items-center gap-2 rounded-lg border border-brand-500 bg-brand-50 px-2.5 py-2 text-[11px] font-semibold text-brand-700"><span class="flex h-4 w-4 items-center justify-center rounded-full bg-brand-500 text-[9px] font-bold text-white">B</span> Data minimization</div>
+                  <div class="flex items-center gap-2 rounded-lg border border-slate-200 px-2.5 py-2 text-[11px] text-slate-500"><span class="flex h-4 w-4 items-center justify-center rounded-full bg-slate-100 text-[9px] font-bold">C</span> Data retention</div>
+                </div>
+              </div>
+
+              <div class="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-emerald-200 bg-emerald-50 px-3.5 py-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-500 text-white">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                  </span>
+                  <div>
+                    <p class="text-[11px] font-bold text-emerald-900">Knowledge check passed</p>
+                    <p class="text-[10px] text-emerald-700">5 / 5 · Next lesson unlocked</p>
+                  </div>
+                </div>
+                <span class="rounded-lg bg-white px-2.5 py-1 text-[9px] font-bold text-emerald-700 shadow-sm">+50 XP</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative z-10 mx-auto mt-4 flex w-fit max-w-full items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2.5 shadow-card sm:mt-5">
+            <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
+            </span>
+            <div>
+              <p class="text-[10px] font-bold text-navy-900">Certificate ready</p>
+              <p class="text-[9px] text-slate-400">Verifiable · shareable</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="border-b border-slate-200 bg-white">
+      <div class="mx-auto grid max-w-7xl grid-cols-2 gap-6 px-5 py-8 sm:px-8 md:grid-cols-4">
+        <div class="flex items-center gap-3">
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></span>
+          <p class="text-[12px] font-semibold text-slate-600">Structured courses</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg></span>
+          <p class="text-[12px] font-semibold text-slate-600">Verified assessments</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg></span>
+          <p class="text-[12px] font-semibold text-slate-600">Live classrooms</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-brand-50 text-brand-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" /><path stroke-linecap="round" d="M2 10h20M6 15h4" /></svg></span>
+          <p class="text-[12px] font-semibold text-slate-600">Integrated billing</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="platform" class="bg-white py-20">
+      <div class="mx-auto max-w-7xl px-5 sm:px-8">
+        <div class="mx-auto max-w-2xl text-center">
+          <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-600">The platform</p>
+          <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-navy-900 sm:text-4xl">Everything your learning program needs</h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-slate-500">
+            Replace scattered documents and spreadsheets with one connected system for authoring,
+            assessment, compliance, and growth.
+          </p>
+        </div>
+
+        <div class="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          <article class="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-brand-200 hover:shadow-card">
+            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" /></svg>
+            </span>
+            <h3 class="mt-4 text-[15px] font-bold text-navy-900">Course authoring</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-slate-500">Upload PDF, DOCX, PPTX, or Markdown and publish a clean, readable lesson webpage in minutes.</p>
+          </article>
+          <article class="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-brand-200 hover:shadow-card">
+            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+            </span>
+            <h3 class="mt-4 text-[15px] font-bold text-navy-900">Randomized assessments</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-slate-500">Every attempt draws a fresh set of approved questions, graded on the server before the next lesson opens.</p>
+          </article>
+          <article class="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-brand-200 hover:shadow-card">
+            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+            </span>
+            <h3 class="mt-4 text-[15px] font-bold text-navy-900">Live classrooms</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-slate-500">Schedule sessions, share meeting links, and keep live learning connected to the course catalog.</p>
+          </article>
+          <article class="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-brand-200 hover:shadow-card">
+            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
+            </span>
+            <h3 class="mt-4 text-[15px] font-bold text-navy-900">Verifiable certificates</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-slate-500">Issue completion certificates with public verification, so every credential can be checked in seconds.</p>
+          </article>
+          <article class="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-brand-200 hover:shadow-card">
+            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+            </span>
+            <h3 class="mt-4 text-[15px] font-bold text-navy-900">HRMS &amp; compliance</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-slate-500">Assign required training by department or position, then track completion against due dates.</p>
+          </article>
+          <article class="rounded-2xl border border-slate-200 bg-white p-6 transition hover:border-brand-200 hover:shadow-card">
+            <span class="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2" /><path stroke-linecap="round" d="M2 10h20M6 15h4" /></svg>
+            </span>
+            <h3 class="mt-4 text-[15px] font-bold text-navy-900">Finance &amp; billing</h3>
+            <p class="mt-2 text-[13px] leading-relaxed text-slate-500">Sell paid courses with verified payments, automatic receipts, and a live revenue dashboard.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="border-y border-slate-200 bg-[#f7fafe] py-20">
+      <div class="mx-auto max-w-7xl px-5 sm:px-8">
+        <div class="max-w-2xl">
+          <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-600">How it works</p>
+          <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-navy-900 sm:text-4xl">From raw file to certificate</h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-slate-500">A simple workflow that keeps instructors in control and learners moving forward.</p>
+        </div>
+
+        <div class="mt-12 grid gap-6 lg:grid-cols-[1fr_1fr] lg:items-start">
+          <ol class="space-y-4">
+            <li class="flex gap-4 rounded-2xl border border-slate-200 bg-white p-5">
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-500 text-[12px] font-bold text-white">1</span>
+              <div>
+                <h3 class="text-[15px] font-bold text-navy-900">Upload your module</h3>
+                <p class="mt-1 text-[13px] leading-relaxed text-slate-500">Add the source document or webpage. The original file stays available for download.</p>
+              </div>
+            </li>
+            <li class="flex gap-4 rounded-2xl border border-slate-200 bg-white p-5">
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-500 text-[12px] font-bold text-white">2</span>
+              <div>
+                <h3 class="text-[15px] font-bold text-navy-900">Review the lesson and question bank</h3>
+                <p class="mt-1 text-[13px] leading-relaxed text-slate-500">Edit the converted lesson and approve the questions learners will actually see.</p>
+              </div>
+            </li>
+            <li class="flex gap-4 rounded-2xl border border-slate-200 bg-white p-5">
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-500 text-[12px] font-bold text-white">3</span>
+              <div>
+                <h3 class="text-[15px] font-bold text-navy-900">Learners study and pass</h3>
+                <p class="mt-1 text-[13px] leading-relaxed text-slate-500">A randomized check gates each next lesson. Progress and scores are recorded automatically.</p>
+              </div>
+            </li>
+            <li class="flex gap-4 rounded-2xl border border-slate-200 bg-white p-5">
+              <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-emerald-500 text-[12px] font-bold text-white">4</span>
+              <div>
+                <h3 class="text-[15px] font-bold text-navy-900">Certify and report</h3>
+                <p class="mt-1 text-[13px] leading-relaxed text-slate-500">Complete the course to issue a verifiable certificate and update compliance reporting.</p>
+              </div>
+            </li>
+          </ol>
+
+          <div class="rounded-2xl border border-slate-200 bg-white p-3 shadow-card lg:sticky lg:top-24">
+            <div class="rounded-xl border border-slate-100 bg-[#f8fbff] p-5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Course overview</p>
+                  <p class="mt-1 text-sm font-bold text-navy-900">Cybersecurity Awareness</p>
+                </div>
+                <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">On track</span>
+              </div>
+              <div class="mt-5 space-y-3">
+                <div class="rounded-xl border border-slate-200 bg-white p-3.5">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-semibold text-navy-900">Lesson 1 · Foundations</span>
+                    <span class="font-bold text-emerald-600">100%</span>
+                  </div>
+                  <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100"><div class="h-full w-full rounded-full bg-emerald-500"></div></div>
+                </div>
+                <div class="rounded-xl border border-brand-200 bg-white p-3.5">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-semibold text-navy-900">Lesson 2 · Phishing</span>
+                    <span class="font-bold text-brand-600">In progress</span>
+                  </div>
+                  <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100"><div class="h-full w-[45%] rounded-full bg-brand-500"></div></div>
+                </div>
+                <div class="rounded-xl border border-slate-200 bg-white p-3.5 opacity-60">
+                  <div class="flex items-center justify-between text-[11px]">
+                    <span class="font-semibold text-slate-500">Lesson 3 · Data handling</span>
+                    <span class="font-bold text-slate-400">Locked</span>
+                  </div>
+                  <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100"><div class="h-full w-0 rounded-full bg-slate-300"></div></div>
+                </div>
+              </div>
+              <div class="mt-4 flex items-center justify-between rounded-xl bg-white px-3.5 py-3">
+                <div class="flex items-center gap-2">
+                  <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-50 text-emerald-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></span>
+                  <p class="text-[10px] font-semibold text-slate-600">Assessment graded on the server</p>
+                </div>
+                <span class="text-[10px] font-bold text-navy-900">4 / 5 to pass</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="for-teams" class="bg-white py-20">
+      <div class="mx-auto grid max-w-7xl gap-12 px-5 sm:px-8 lg:grid-cols-2 lg:items-center">
+        <div>
+          <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-600">For administrators &amp; HR</p>
+          <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-navy-900 sm:text-4xl">Compliance you can actually see</h2>
+          <p class="mt-4 text-[15px] leading-relaxed text-slate-500">
+            Manage employees, departments, and positions in one place. Required training is assigned
+            automatically and every completion is tracked against its due date.
+          </p>
+          <ul class="mt-7 space-y-3.5 text-[13px] text-slate-600">
+            <li class="flex items-start gap-3"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700"><svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></span> Role-based access for administrators, HR, instructors, and learners.</li>
+            <li class="flex items-start gap-3"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700"><svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></span> Completion, pass-rate, and overdue-training reports with CSV export.</li>
+            <li class="flex items-start gap-3"><span class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700"><svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg></span> Audit logs, public certificate verification, and in-app notifications.</li>
+          </ul>
+          <a href="/login" class="ui-btn ui-btn-primary mt-8">Open the admin workspace</a>
+        </div>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <div class="rounded-2xl border border-slate-200 bg-[#f8fbff] p-6">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-brand-600 shadow-sm"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg></span>
+            <h3 class="mt-4 text-[14px] font-bold text-navy-900">Role-based access</h3>
+            <p class="mt-2 text-[12px] leading-relaxed text-slate-500">Separate workspaces for administrators, HR, instructors, and learners.</p>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-6">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg></span>
+            <h3 class="mt-4 text-[14px] font-bold text-navy-900">Automated assignment</h3>
+            <p class="mt-2 text-[12px] leading-relaxed text-slate-500">Required training assigned automatically by department, position, or onboarding rule.</p>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-white p-6">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 text-brand-600"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></span>
+            <h3 class="mt-4 text-[14px] font-bold text-navy-900">Audit-ready records</h3>
+            <p class="mt-2 text-[12px] leading-relaxed text-slate-500">Every lesson unlock, attempt, approval, and admin action is written to the audit log.</p>
+          </div>
+          <div class="rounded-2xl border border-slate-200 bg-[#f8fbff] p-6">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-brand-600 shadow-sm"><svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg></span>
+            <h3 class="mt-4 text-[14px] font-bold text-navy-900">Public verification</h3>
+            <p class="mt-2 text-[12px] leading-relaxed text-slate-500">Each certificate carries a unique ID that anyone can validate from the public page.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-5 pb-20 sm:px-8">
+      <div class="mx-auto max-w-7xl overflow-hidden rounded-3xl border border-brand-100 bg-brand-50/70 px-6 py-12 text-center sm:px-12">
+        <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-600">Get started today</p>
+        <h2 class="mx-auto mt-3 max-w-2xl text-3xl font-extrabold tracking-tight text-navy-900 sm:text-4xl">Ready to build a stronger learning culture?</h2>
+        <p class="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-slate-600">Create a learner account in seconds, or sign in to continue your organization's training.</p>
+        <div class="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+          <a href="/register" class="ui-btn ui-btn-primary !px-6 !py-3.5">Create learner account</a>
+          <a href="/login" class="ui-btn ui-btn-secondary !px-6 !py-3.5">Sign in</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+{{> footer}}

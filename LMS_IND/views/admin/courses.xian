@@ -1,0 +1,76 @@
+{{> app_start}}
+
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div>
+    <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Administration</p>
+    <h1 class="mt-1.5 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">Course management</h1>
+    <p class="mt-1 text-sm text-slate-500">All courses across the platform, with enrollment and completion metrics.</p>
+  </div>
+  <a href="/admin/reports" class="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Reports & analytics</a>
+</div>
+
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  {{#if courses.length}}
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-5 py-3 font-semibold">Course</th>
+            <th class="px-4 py-3 font-semibold">Instructor</th>
+            <th class="px-4 py-3 font-semibold">Category</th>
+            <th class="px-4 py-3 font-semibold">Price (PHP)</th>
+            <th class="px-4 py-3 font-semibold">Status</th>
+            <th class="px-4 py-3 font-semibold">Enrolled</th>
+            <th class="px-4 py-3 font-semibold">Completed</th>
+            <th class="px-5 py-3 font-semibold">Avg progress</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {{#each courses}}
+            <tr class="hover:bg-slate-50/60">
+              <td class="max-w-[280px] px-5 py-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-[10px] font-bold text-white" style="background-color: {{accent}}">{{initials title}}</span>
+                  <div class="min-w-0">
+                    <a href="/courses/{{id}}" class="block truncate text-xs font-semibold text-navy-900 hover:text-brand-600">{{title}}</a>
+                    <p class="truncate text-[10px] text-slate-400">{{level}} · {{questionCount}} questions · pass {{passScore}}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-[11px] text-slate-600">{{instructor.name}}</td>
+              <td class="px-4 py-3 text-[11px] text-slate-500">{{#if category}}{{category.name}}{{else}}—{{/if}}</td>
+              <td class="px-4 py-3">
+                <form action="/admin/courses/{{id}}/price" method="POST" class="flex items-center gap-1.5">
+                  <input type="hidden" name="_csrf" value="{{@root.csrfToken}}" />
+                  <input name="price" type="number" min="0" max="1000000" step="0.01" value="{{price}}" aria-label="Course price" class="field w-24 px-2 py-1 text-[11px]" />
+                  <button type="submit" class="rounded-lg bg-brand-600 px-2 py-1 text-[10px] font-semibold text-white transition hover:bg-brand-700">Save</button>
+                </form>
+                <p class="mt-1 text-[10px] font-bold uppercase tracking-wide {{#if (gt price 0)}}text-amber-600{{else}}text-emerald-600{{/if}}">
+                  {{#if (gt price 0)}}Paid · {{peso price currency}}{{else}}Free{{/if}}
+                </p>
+              </td>
+              <td class="px-4 py-3">
+                <span class="rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide
+                  {{#if (eq status "published")}}bg-emerald-50 text-emerald-700{{else if (eq status "archived")}}bg-slate-100 text-slate-500{{else}}bg-amber-50 text-amber-700{{/if}}">{{status}}</span>
+              </td>
+              <td class="px-4 py-3 text-xs font-semibold text-navy-900">{{enrolled}}</td>
+              <td class="px-4 py-3 text-xs font-semibold text-emerald-600">{{completed}}</td>
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-2">
+                  <div class="h-1.5 w-20 overflow-hidden rounded-full bg-slate-100">
+                    <div class="h-full rounded-full bg-brand-500" style="width: {{avgProgress}}%"></div>
+                  </div>
+                  <span class="text-[11px] font-semibold text-slate-500">{{avgProgress}}%</span>
+                </div>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{else}}
+    <p class="px-5 py-14 text-center text-sm text-slate-500">No courses have been created yet.</p>
+  {{/if}}
+</div>
+
+{{> app_end}}

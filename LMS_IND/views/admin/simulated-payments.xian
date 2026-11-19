@@ -1,0 +1,146 @@
+{{> app_start}}
+
+<nav class="mb-5 flex flex-wrap items-center gap-2 text-xs text-slate-400" aria-label="Breadcrumb">
+  <a href="/admin/finance" class="font-semibold hover:text-brand-600">Finance &amp; Billing</a>
+  <span>/</span>
+  <span class="text-slate-600">Simulated payments</span>
+</nav>
+
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div>
+    <div class="flex flex-wrap items-center gap-2">
+      <p class="text-xs font-bold uppercase tracking-[0.16em] text-amber-600">Administration</p>
+      <span class="rounded-full border border-amber-300 bg-amber-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-800">Demo ledger</span>
+    </div>
+    <h1 class="mt-1.5 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">Simulated payments</h1>
+    <p class="mt-1 max-w-3xl text-sm text-slate-500">Monitor demo transactions recorded by the learner billing simulation. These rows are separate from real course payments and are excluded from all revenue totals.</p>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <a href="{{exportUrl}}" class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+      Export CSV
+    </a>
+    <a href="/admin/finance" class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Live finance</a>
+  </div>
+</div>
+
+<div class="mb-6 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+  <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+  <div>
+    <p class="font-bold">Not real payments</p>
+    <p class="mt-0.5 text-xs leading-relaxed">A simulated transaction never settles an invoice, unlocks a course, or appears in collected revenue. Official receipts are not available for these rows.</p>
+  </div>
+</div>
+
+<div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Matching transactions</p>
+    <p class="mt-3 text-3xl font-extrabold text-navy-900">{{number data.total}}</p>
+    <p class="mt-1 text-xs text-slate-400">Search and filter results</p>
+  </article>
+  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Simulated</p>
+    <p class="mt-3 text-3xl font-extrabold text-sky-700">{{number data.totals.simulatedCount}}</p>
+    <p class="mt-1 text-xs text-slate-400">Successful demo records</p>
+  </article>
+  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Simulated amount</p>
+    <p class="mt-3 text-3xl font-extrabold text-emerald-700">{{peso data.totals.simulatedAmount}}</p>
+    <p class="mt-1 text-xs text-slate-400">Not collected revenue</p>
+  </article>
+  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Cancelled / failed</p>
+    <p class="mt-3 text-3xl font-extrabold text-amber-700">{{number data.totals.cancelledCount}} / {{number data.totals.failedCount}}</p>
+    <p class="mt-1 text-xs text-slate-400">No money moved</p>
+  </article>
+</div>
+
+<section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <form action="/admin/finance/simulated" method="GET" class="grid gap-3 border-b border-slate-100 px-5 py-4 md:grid-cols-[1fr_180px_180px_auto]">
+    <div>
+      <label class="label" for="demo-search">Search</label>
+      <input class="field" id="demo-search" name="q" value="{{filters.q}}" placeholder="Student, invoice, or transaction reference" />
+    </div>
+    <div>
+      <label class="label" for="demo-method">Method</label>
+      <select class="field" id="demo-method" name="method">
+        <option value="">All methods</option>
+        {{#each demoMethods}}
+          <option value="{{slug}}" {{#if (eq ../filters.method slug)}}selected{{/if}}>{{name}}</option>
+        {{/each}}
+      </select>
+    </div>
+    <div>
+      <label class="label" for="demo-status">Status</label>
+      <select class="field" id="demo-status" name="status">
+        <option value="">All statuses</option>
+        <option value="simulated" {{#if (eq filters.status "simulated")}}selected{{/if}}>Simulated</option>
+        <option value="cancelled" {{#if (eq filters.status "cancelled")}}selected{{/if}}>Cancelled</option>
+        <option value="failed" {{#if (eq filters.status "failed")}}selected{{/if}}>Failed</option>
+      </select>
+    </div>
+    <div class="flex items-end gap-2">
+      <button type="submit" class="rounded-xl bg-navy-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-navy-800">Filter</button>
+      <a href="/admin/finance/simulated" class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm font-semibold text-slate-600 transition hover:bg-slate-50">Reset</a>
+    </div>
+  </form>
+
+  {{#if data.rows.length}}
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-5 py-3 font-semibold">Transaction</th>
+            <th class="px-4 py-3 font-semibold">Student</th>
+            <th class="px-4 py-3 font-semibold">Invoice</th>
+            <th class="px-4 py-3 font-semibold">Course</th>
+            <th class="px-4 py-3 font-semibold">Method</th>
+            <th class="px-4 py-3 font-semibold">Amount</th>
+            <th class="px-4 py-3 font-semibold">Date</th>
+            <th class="px-4 py-3 font-semibold">Status</th>
+            <th class="px-5 py-3 font-semibold"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {{#each data.rows}}
+            <tr class="hover:bg-slate-50/60">
+              <td class="px-5 py-3 font-mono text-[11px] font-semibold text-navy-900">{{reference}}</td>
+              <td class="px-4 py-3">
+                <p class="text-xs font-semibold text-navy-900">{{studentName}}</p>
+                <p class="text-[10px] text-slate-400">{{studentEmail}}</p>
+              </td>
+              <td class="px-4 py-3 font-mono text-[10px] text-slate-500">{{invoiceReference}}</td>
+              <td class="max-w-[190px] px-4 py-3 text-xs text-slate-600"><span class="line-clamp-1">{{courseTitle}}</span></td>
+              <td class="px-4 py-3 text-xs text-slate-600">{{paymentMethodName}}</td>
+              <td class="px-4 py-3 text-xs font-semibold text-navy-900">{{peso amount currency}}</td>
+              <td class="px-4 py-3 text-[11px] text-slate-500">{{formatDateTime createdAt}}</td>
+              <td class="px-4 py-3">
+                {{#if (eq status "simulated")}}
+                  <span class="rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-sky-700">Simulated</span>
+                {{else if (eq status "cancelled")}}
+                  <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-500">Cancelled</span>
+                {{else}}
+                  <span class="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-rose-700">Failed</span>
+                {{/if}}
+              </td>
+              <td class="px-5 py-3 text-right">
+                <a href="/admin/finance/simulated/{{reference}}" class="text-xs font-semibold text-brand-600 hover:text-brand-700">Details</a>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+    <div class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 px-5 py-3 text-[11px] text-slate-400">
+      <span>Showing {{data.rows.length}} of {{data.total}} matching demo transactions.</span>
+      <span>Demo records are never included in live finance reports.</span>
+    </div>
+  {{else}}
+    <div class="px-5 py-14 text-center">
+      <p class="text-sm font-semibold text-navy-900">No simulated payments found</p>
+      <p class="mt-1 text-xs text-slate-500">Try clearing the filters, or have a learner create a demo invoice from the Billing page.</p>
+    </div>
+  {{/if}}
+</section>
+
+{{> app_end}}

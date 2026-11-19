@@ -1,0 +1,164 @@
+{{> app_start}}
+
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div>
+    <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Administration</p>
+    <h1 class="mt-1.5 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">User management</h1>
+    <p class="mt-1 text-sm text-slate-500">Provision staff and learner accounts, change roles, and control access.</p>
+  </div>
+  <span class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600">{{users.length}} accounts</span>
+</div>
+
+<div class="mb-5 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row">
+  <form action="/admin/users" method="GET" class="flex flex-1 flex-col gap-2 sm:flex-row">
+    <div class="relative flex-1">
+      <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" /></svg>
+      <input name="q" value="{{search}}" type="search" placeholder="Search name, email, or employee ID…" class="field pl-9" />
+    </div>
+    <select name="role" class="field sm:w-44">
+      <option value="">All roles</option>
+      <option value="learner" {{#if (eq role "learner")}}selected{{/if}}>Learner</option>
+      <option value="instructor" {{#if (eq role "instructor")}}selected{{/if}}>Instructor</option>
+      <option value="hr" {{#if (eq role "hr")}}selected{{/if}}>HR administrator</option>
+      <option value="superadmin" {{#if (eq role "superadmin")}}selected{{/if}}>Super administrator</option>
+    </select>
+    <button type="submit" class="rounded-lg bg-brand-600 px-4 py-2 text-xs font-semibold text-white transition hover:bg-brand-700">Filter</button>
+    {{#if search}}<a href="/admin/users" class="rounded-lg border border-slate-300 px-3 py-2 text-center text-xs font-semibold text-slate-500 hover:bg-slate-50">Clear</a>{{/if}}
+  </form>
+</div>
+
+<div class="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-left text-sm">
+      <thead class="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500">
+        <tr>
+          <th class="px-5 py-3 font-semibold">User</th>
+          <th class="px-4 py-3 font-semibold">Role</th>
+          <th class="px-4 py-3 font-semibold">Organization</th>
+          <th class="px-4 py-3 font-semibold">Status</th>
+          <th class="px-4 py-3 font-semibold">Last sign-in</th>
+          <th class="px-5 py-3 text-right font-semibold">Access</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-slate-100">
+        {{#each users}}
+          <tr class="align-top hover:bg-slate-50/60">
+            <td class="px-5 py-3">
+              <div class="flex items-center gap-2.5">
+                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white" style="background-color: {{avatarColor}}">{{initials name}}</span>
+                <div class="min-w-0">
+                  <p class="truncate text-xs font-semibold text-navy-900">{{name}}</p>
+                  <p class="truncate text-[10px] text-slate-400">{{email}}{{#if employeeId}} · {{employeeId}}{{/if}}</p>
+                </div>
+              </div>
+            </td>
+            <td class="px-4 py-3">
+              <form action="/admin/users/{{id}}/role" method="POST">
+                <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                <select name="role" onchange="this.form.submit()" class="rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700">
+                  <option value="learner" {{#if (eq role "learner")}}selected{{/if}}>Learner</option>
+                  <option value="instructor" {{#if (eq role "instructor")}}selected{{/if}}>Instructor</option>
+                  <option value="hr" {{#if (eq role "hr")}}selected{{/if}}>HR</option>
+                  <option value="superadmin" {{#if (eq role "superadmin")}}selected{{/if}}>Super admin</option>
+                </select>
+              </form>
+            </td>
+            <td class="px-4 py-3">
+              <p class="text-[11px] text-slate-600">{{#if department}}{{department.name}}{{else}}—{{/if}}</p>
+              <p class="text-[10px] text-slate-400">{{#if position}}{{position.title}}{{/if}}</p>
+            </td>
+            <td class="px-4 py-3">
+              {{#if isActive}}
+                <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-700">Active</span>
+              {{else}}
+                <span class="rounded-full bg-rose-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-rose-700">Disabled</span>
+              {{/if}}
+            </td>
+            <td class="px-4 py-3 text-[11px] text-slate-400">{{#if lastLoginAt}}{{formatDate lastLoginAt}}{{else}}Never{{/if}}</td>
+            <td class="px-5 py-3">
+              <div class="flex items-center justify-end gap-1.5">
+                <form action="/admin/users/{{id}}/reset-password" method="POST" data-confirm="Reset this user's password? A temporary password will be shown.">
+                  <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                  <button type="submit" class="rounded-lg border border-slate-300 px-2.5 py-1.5 text-[10px] font-semibold text-slate-600 transition hover:bg-slate-50">Reset password</button>
+                </form>
+                <form action="/admin/users/{{id}}/toggle" method="POST" data-confirm="{{#if isActive}}Deactivate this account?{{else}}Activate this account?{{/if}}">
+                  <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                  <button type="submit" class="rounded-lg px-2.5 py-1.5 text-[10px] font-semibold transition {{#if isActive}}border border-rose-200 text-rose-600 hover:bg-rose-50{{else}}border border-emerald-200 text-emerald-700 hover:bg-emerald-50{{/if}}">
+                    {{#if isActive}}Deactivate{{else}}Activate{{/if}}
+                  </button>
+                </form>
+              </div>
+            </td>
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  </div>
+  {{#unless users.length}}
+    <p class="px-5 py-12 text-center text-sm text-slate-500">No users match your filters.</p>
+  {{/unless}}
+</div>
+
+<details class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <summary class="flex cursor-pointer items-center justify-between px-5 py-4">
+    <div>
+      <p class="text-sm font-bold text-navy-900">Create an account</p>
+      <p class="mt-0.5 text-xs text-slate-400">Provision a staff or learner account with an initial password.</p>
+    </div>
+    <span class="rounded-lg bg-brand-50 px-3 py-1.5 text-xs font-semibold text-brand-700">Open form</span>
+  </summary>
+  <form action="/admin/users" method="POST" class="border-t border-slate-100 p-5 sm:p-6">
+    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div>
+        <label class="label" for="name">Full name</label>
+        <input id="name" name="name" type="text" required class="field" placeholder="Alex Cruz" />
+      </div>
+      <div>
+        <label class="label" for="email">Work email</label>
+        <input id="email" name="email" type="email" required class="field" placeholder="alex@company.com" />
+      </div>
+      <div>
+        <label class="label" for="password">Initial password</label>
+        <input id="password" name="password" type="text" minlength="8" required class="field" placeholder="At least 8 characters" />
+      </div>
+      <div>
+        <label class="label" for="role">Role</label>
+        <select id="role" name="role" class="field">
+          <option value="learner">Learner</option>
+          <option value="instructor">Instructor</option>
+          <option value="hr">HR administrator</option>
+          <option value="superadmin">Super administrator</option>
+        </select>
+      </div>
+      <div>
+        <label class="label" for="employeeId">Employee ID (optional)</label>
+        <input id="employeeId" name="employeeId" type="text" class="field" placeholder="EMP-010" />
+      </div>
+      <div>
+        <label class="label" for="dateHired">Date hired (optional)</label>
+        <input id="dateHired" name="dateHired" type="date" class="field" />
+      </div>
+      <div>
+        <label class="label" for="departmentId">Department</label>
+        <select id="departmentId" name="departmentId" class="field">
+          <option value="">Unassigned</option>
+          {{#each departments}}<option value="{{id}}">{{name}}</option>{{/each}}
+        </select>
+      </div>
+      <div>
+        <label class="label" for="positionId">Position</label>
+        <select id="positionId" name="positionId" class="field">
+          <option value="">Unassigned</option>
+          {{#each positions}}<option value="{{id}}">{{title}}</option>{{/each}}
+        </select>
+      </div>
+      <div class="flex items-end">
+        <button type="submit" class="w-full rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Create account</button>
+      </div>
+    </div>
+    <p class="mt-3 text-[11px] text-slate-400">Learner accounts are automatically assigned onboarding and position-required training. Share the initial password securely; email delivery is not configured.</p>
+  </form>
+</details>
+
+{{> app_end}}

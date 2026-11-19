@@ -1,0 +1,126 @@
+{{> app_start}}
+
+<div class="mx-auto max-w-4xl">
+  <nav class="no-print mb-5 flex items-center gap-2 text-xs text-slate-400" aria-label="Breadcrumb">
+    <a href="/billing" class="font-semibold hover:text-brand-600">Billing</a>
+    <span>/</span>
+    <span class="text-slate-600">Demo transaction result</span>
+  </nav>
+
+  <div class="mb-5 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900">
+    <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+    <div>
+      <p class="text-sm font-bold">DEMO TRANSACTION — NOT A REAL PAYMENT</p>
+      <p class="mt-0.5 text-xs leading-relaxed">This record proves that the simulation flow works. No money was collected, no real invoice was settled, and no course was unlocked.</p>
+    </div>
+  </div>
+
+  <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-card">
+    <div class="px-6 py-8 text-center sm:px-10" style="{{#if (eq transaction.status 'simulated')}}background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 55%, #ffffff 100%);{{else if (eq transaction.status 'cancelled')}}background: linear-gradient(135deg, #fffbeb 0%, #fff7ed 55%, #ffffff 100%);{{else}}background: linear-gradient(135deg, #fff1f2 0%, #fff7f7 55%, #ffffff 100%);{{/if}}">
+      {{#if (eq transaction.status "simulated")}}
+        <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 ring-8 ring-emerald-50">
+          <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+        </span>
+        <p class="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-700">Simulation complete</p>
+        <h1 class="mt-1 text-2xl font-extrabold tracking-tight text-navy-900 sm:text-3xl">Simulated payment successful</h1>
+        <p class="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-slate-500">The demo processor recorded your selected method. This does not represent a financial settlement.</p>
+        <div class="mt-4 inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-sky-700">
+          <span class="h-1.5 w-1.5 rounded-full bg-sky-500"></span> Status: SIMULATED
+        </div>
+      {{else if (eq transaction.status "cancelled")}}
+        <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-amber-100 text-amber-700 ring-8 ring-amber-50">
+          <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+        </span>
+        <p class="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-amber-700">Simulation cancelled</p>
+        <h1 class="mt-1 text-2xl font-extrabold tracking-tight text-navy-900 sm:text-3xl">Demo payment cancelled</h1>
+        <p class="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-slate-500">No money was simulated and the demo invoice was closed. You can create another practice invoice from Billing.</p>
+        <div class="mt-4 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">
+          <span class="h-1.5 w-1.5 rounded-full bg-amber-500"></span> Status: CANCELLED
+        </div>
+      {{else}}
+        <span class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-100 text-rose-700 ring-8 ring-rose-50">
+          <svg class="h-8 w-8" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        </span>
+        <p class="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-rose-700">Simulation failed</p>
+        <h1 class="mt-1 text-2xl font-extrabold tracking-tight text-navy-900 sm:text-3xl">Demo payment failed</h1>
+        <p class="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-slate-500">{{#if transaction.failureReason}}{{transaction.failureReason}}{{else}}The demo transaction did not complete. No money moved.{{/if}}</p>
+        <div class="mt-4 inline-flex items-center gap-2 rounded-full border border-rose-200 bg-rose-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-rose-700">
+          <span class="h-1.5 w-1.5 rounded-full bg-rose-500"></span> Status: FAILED
+        </div>
+      {{/if}}
+
+      <div class="mt-6">
+        <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Demo amount</p>
+        <p class="mt-1 text-4xl font-extrabold tracking-tight text-navy-900">{{peso transaction.amount transaction.currency}}</p>
+      </div>
+    </div>
+
+    <div class="border-t border-slate-100 px-6 py-6 sm:px-10">
+      <div class="flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="flex h-9 w-9 items-center justify-center rounded-xl text-white" style="background: {{#if method}}{{method.accent}}{{else}}#475569{{/if}};">
+            {{#if (eq transaction.paymentMethod "gcash")}}
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M5 6h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zm3 8h4" /></svg>
+            {{else if (eq transaction.paymentMethod "maya")}}
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            {{else}}
+              <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10l9-7 9 7M5 10v10h14V10M9 20v-6h6v6" /></svg>
+            {{/if}}
+          </span>
+          <div>
+            <p class="text-xs font-bold text-navy-900">{{transaction.paymentMethodName}}</p>
+            <p class="text-[10px] uppercase tracking-wide text-slate-400">Simulated method</p>
+          </div>
+        </div>
+        <span class="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-700">DEMO RECEIPT</span>
+      </div>
+
+      <h2 class="mt-5 border-t border-slate-100 pt-5 text-xs font-bold uppercase tracking-[0.14em] text-slate-400">Demo transaction details</h2>
+      <dl class="mt-3 grid gap-3 text-xs sm:grid-cols-2">
+        <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+          <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Transaction reference</dt>
+          <dd class="mt-1 break-all font-mono text-[11px] font-semibold text-navy-900">{{transaction.reference}}</dd>
+        </div>
+        <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+          <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Invoice number</dt>
+          <dd class="mt-1 break-all font-mono text-[11px] font-semibold text-navy-900">{{transaction.invoiceReference}}</dd>
+        </div>
+        <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+          <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Student</dt>
+          <dd class="mt-1 font-semibold text-navy-900">{{transaction.studentName}}</dd>
+          <dd class="text-[10px] text-slate-400">{{transaction.studentEmail}}</dd>
+        </div>
+        <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+          <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Course</dt>
+          <dd class="mt-1 font-semibold text-navy-900">{{transaction.courseTitle}}</dd>
+        </div>
+        <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+          <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Date and time</dt>
+          <dd class="mt-1 font-semibold text-navy-900">{{formatDateTime transaction.createdAt}}</dd>
+        </div>
+        <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+          <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Payment mode / status</dt>
+          <dd class="mt-1 flex flex-wrap items-center gap-2">
+            <span class="font-semibold text-navy-900">DEMO</span>
+            <span class="rounded-full bg-sky-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-sky-700">{{transaction.status}}</span>
+          </dd>
+        </div>
+      </dl>
+
+      <div class="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-[11px] leading-relaxed text-slate-500">
+        <p class="font-bold uppercase tracking-wide text-navy-900">DEMO RECEIPT — SIMULATED TRANSACTION</p>
+        <p class="mt-1">This document is not an official GCash, Maya, MariBank, bank, or government receipt. It cannot be used as proof of payment. The related course purchase remains unpaid and the course remains locked.</p>
+      </div>
+
+      <div class="no-print mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <a href="/billing" class="flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">Return to Billing</a>
+        <button type="button" onclick="window.print()" class="flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+          Print demo receipt
+        </button>
+      </div>
+    </div>
+  </section>
+</div>
+
+{{> app_end}}

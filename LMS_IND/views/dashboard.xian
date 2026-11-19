@@ -1,0 +1,236 @@
+{{> app_start}}
+
+<section class="relative mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white px-5 py-6 sm:px-7 sm:py-7">
+  <div class="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full bg-brand-100/60 blur-2xl"></div>
+  <div class="relative flex flex-col justify-between gap-5 lg:flex-row lg:items-center">
+    <div class="flex items-start gap-4">
+      <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-bold text-white shadow-sm" style="background-color: {{currentUser.avatarColor}}">{{initials currentUser.name}}</span>
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-600">Learner workspace</p>
+        <h1 class="mt-1 text-2xl font-extrabold tracking-tight text-navy-900 sm:text-[1.7rem]">Welcome back, {{currentUser.name}}</h1>
+        <p class="mt-1 text-[13px] text-slate-500">Pick up where you left off, or browse the catalog for new training.</p>
+      </div>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a href="/live" class="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy-900 transition hover:border-brand-200 hover:bg-brand-50/40">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+        Live classes
+      </a>
+      <a href="/courses" class="ui-btn ui-btn-primary !py-2.5 text-[13px]">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" /></svg>
+        Browse catalog
+      </a>
+    </div>
+  </div>
+</section>
+
+{{#if continueLesson}}
+  <section class="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
+    <div class="grid gap-0 lg:grid-cols-[1.6fr_1fr]">
+      <div class="p-6 sm:p-8">
+        <div class="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-brand-600">
+          <span class="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+          Continue learning
+        </div>
+        <p class="mt-4 text-xs font-semibold text-slate-400">{{continueLesson.course.title}}</p>
+        <h2 class="mt-1 text-2xl font-bold tracking-tight text-navy-900">{{continueLesson.title}}</h2>
+        <p class="mt-2 max-w-xl text-sm leading-relaxed text-slate-500">{{continueLesson.summary}}</p>
+        <div class="mt-5 flex flex-wrap items-center gap-4 text-xs text-slate-500">
+          <span class="inline-flex items-center gap-1.5">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            {{continueLesson.durationMinutes}} min
+          </span>
+          <span class="inline-flex items-center gap-1.5 capitalize">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+            {{continueLesson.status}}
+          </span>
+        </div>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <a href="/learn/{{continueLesson.id}}" class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+            Resume lesson
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+          </a>
+          <a href="/courses/{{continueLesson.courseId}}" class="inline-flex items-center rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">Course overview</a>
+        </div>
+      </div>
+      <div class="relative hidden items-center justify-center bg-navy-900 p-8 lg:flex">
+        <div class="absolute inset-0 opacity-20" style="background: radial-gradient(circle at 70% 30%, {{continueLesson.course.accent}}, transparent 60%);"></div>
+        <div class="relative w-full max-w-[220px]">
+          <div class="mx-auto flex h-32 w-32 items-center justify-center rounded-3xl border border-white/10 bg-white/5">
+            <svg class="h-14 w-14 text-brand-300" fill="none" stroke="currentColor" stroke-width="1.2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+          </div>
+          <p class="mt-5 text-center text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">Course progress</p>
+          <p class="mt-1 text-center text-3xl font-extrabold text-white">{{percentText continueLesson.progress.percent}}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+{{else}}
+  <section class="mb-6 rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center">
+    <span class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-brand-50 text-brand-600">
+      <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+    </span>
+    <h2 class="mt-4 text-lg font-bold text-navy-900">No lesson in progress</h2>
+    <p class="mt-1 text-sm text-slate-500">Browse the catalog to enroll in a course and start your first lesson.</p>
+    <a href="/courses" class="mt-5 inline-flex rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Browse courses</a>
+  </section>
+{{/if}}
+
+<div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Enrolled courses</p>
+        <p class="mt-2 text-[2rem] font-extrabold leading-none tracking-tight text-navy-900">{{stats.enrolled}}</p>
+      </div>
+      <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg></span>
+    </div>
+    <p class="mt-3 text-[11px] text-slate-400">{{stats.completedCourses}} completed</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Lessons completed</p>
+        <p class="mt-2 text-[2rem] font-extrabold leading-none tracking-tight text-navy-900">{{stats.completedLessons}}</p>
+      </div>
+      <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></span>
+    </div>
+    <p class="mt-3 text-[11px] text-slate-400">{{stats.pending}} awaiting a knowledge check</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Average score</p>
+        <p class="mt-2 text-[2rem] font-extrabold leading-none tracking-tight text-navy-900">{{stats.averageScore}}%</p>
+      </div>
+      <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-50 text-amber-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h-2a2 2 0 01-2-2z" /></svg></span>
+    </div>
+    <p class="mt-3 text-[11px] text-slate-400">Across completed checks</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Certificates</p>
+        <p class="mt-2 text-[2rem] font-extrabold leading-none tracking-tight text-navy-900">{{stats.certificates}}</p>
+      </div>
+      <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-50 text-brand-600"><svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg></span>
+    </div>
+    <p class="mt-3 text-[11px] text-slate-400">Earned and verifiable</p>
+  </div>
+</div>
+
+<div class="grid gap-6 xl:grid-cols-3">
+  <div class="space-y-6 xl:col-span-2">
+    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <h2 class="text-sm font-bold text-navy-900">My courses</h2>
+        <a href="/courses" class="text-xs font-semibold text-brand-600 hover:text-brand-700">View catalog</a>
+      </div>
+      {{#if myCourses}}
+        <div class="divide-y divide-slate-100">
+          {{#each myCourses}}
+            <a href="/courses/{{id}}" class="flex items-center gap-4 px-5 py-4 transition hover:bg-slate-50">
+              <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white" style="background-color: {{accent}}">{{initials title}}</span>
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-sm font-semibold text-navy-900">{{title}}</p>
+                <div class="mt-2 flex items-center gap-3">
+                  <div class="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100">
+                    <div class="h-full rounded-full bg-brand-500" style="width: {{progress.percent}}%"></div>
+                  </div>
+                  <span class="text-[11px] font-semibold text-slate-400">{{progress.percent}}%</span>
+                </div>
+              </div>
+              <svg class="h-4 w-4 shrink-0 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" /></svg>
+            </a>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="px-5 py-10 text-center">
+          <p class="text-sm text-slate-500">You are not enrolled in any course yet.</p>
+          <a href="/courses" class="mt-3 inline-flex text-sm font-semibold text-brand-600">Find your first course →</a>
+        </div>
+      {{/if}}
+    </section>
+
+    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <h2 class="text-sm font-bold text-navy-900">Assigned training</h2>
+        <a href="/assessments" class="text-xs font-semibold text-brand-600 hover:text-brand-700">View assessments</a>
+      </div>
+      {{#if assignments}}
+        <div class="divide-y divide-slate-100">
+          {{#each assignments}}
+            <div class="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p class="text-sm font-semibold text-navy-900">{{course.title}}</p>
+                <p class="mt-0.5 text-xs text-slate-400">Assigned by {{source}} · {{#if dueDate}}Due {{formatDate dueDate}}{{else}}No due date{{/if}}</p>
+              </div>
+              <div class="flex items-center gap-2">
+                <span class="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-700">{{status}}</span>
+                <a href="/courses/{{courseId}}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-navy-900 transition hover:bg-slate-50">Open</a>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="px-5 py-8 text-center text-sm text-slate-500">No outstanding training assignments.</p>
+      {{/if}}
+    </section>
+  </div>
+
+  <div class="space-y-6">
+    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <h2 class="text-sm font-bold text-navy-900">Notifications</h2>
+        <a href="/notifications" class="text-xs font-semibold text-brand-600 hover:text-brand-700">All</a>
+      </div>
+      {{#if notifications}}
+        <div class="divide-y divide-slate-100">
+          {{#each notifications}}
+            <a href="/notifications/{{id}}/open" class="block px-5 py-3.5 transition hover:bg-slate-50">
+              <div class="flex items-start gap-2">
+                {{#unless isRead}}<span class="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-500"></span>{{/unless}}
+                <div class="min-w-0">
+                  <p class="text-xs font-semibold text-navy-900">{{title}}</p>
+                  <p class="mt-0.5 line-clamp-2 text-[11px] leading-relaxed text-slate-500">{{message}}</p>
+                  <p class="mt-1 text-[10px] text-slate-400">{{formatDateTime createdAt}}</p>
+                </div>
+              </div>
+            </a>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="px-5 py-8 text-center text-sm text-slate-500">You have no notifications.</p>
+      {{/if}}
+    </section>
+
+    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold text-navy-900">Certificates</h2>
+        <a href="/certificates" class="text-xs font-semibold text-brand-600">All</a>
+      </div>
+      {{#if certificates}}
+        <div class="mt-3 space-y-2">
+          {{#each certificates}}
+            <a href="/certificates/{{id}}" class="block rounded-xl border border-slate-200 p-3 transition hover:border-brand-300 hover:bg-brand-50/40">
+              <p class="text-xs font-semibold text-navy-900">{{courseTitle}}</p>
+              <p class="mt-0.5 text-[10px] text-slate-400">Issued {{formatDate issuedAt}} · {{certificateId}}</p>
+            </a>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="mt-3 rounded-xl bg-slate-50 p-4 text-center">
+          <p class="text-xs text-slate-500">Complete a course to earn your first certificate.</p>
+        </div>
+      {{/if}}
+    </section>
+
+    <section class="rounded-2xl bg-navy-900 p-5 text-white">
+      <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-brand-300">How unlocking works</p>
+      <p class="mt-2 text-sm leading-relaxed text-slate-300">Each lesson ends with a 5-question check. Score at least 4 to unlock the next lesson. The question set is randomized on the server every attempt.</p>
+      <a href="/assessments" class="mt-4 inline-flex text-xs font-semibold text-white underline underline-offset-4">Review your assessments</a>
+    </section>
+  </div>
+</div>
+
+{{> app_end}}

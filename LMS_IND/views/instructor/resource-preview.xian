@@ -1,0 +1,57 @@
+{{> app_start}}
+
+<div class="mb-4 flex items-center gap-2 text-xs text-slate-400">
+  <a href="/instructor/courses" class="hover:text-brand-600">My courses</a>
+  <span>/</span>
+  <a href="/instructor/courses/{{lesson.courseId}}/builder" class="max-w-[200px] truncate hover:text-brand-600">{{lesson.course.title}}</a>
+  <span>/</span>
+  <a href="/instructor/lessons/{{lesson.id}}/edit" class="max-w-[200px] truncate hover:text-brand-600">{{lesson.title}}</a>
+  <span>/</span>
+  <span class="truncate text-slate-600">Document preview</span>
+</div>
+
+<div class="mb-5 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div class="min-w-0">
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-brand-700">Source document</span>
+      <span class="text-[11px] font-semibold text-slate-400">{{formatDate resource.createdAt}}</span>
+    </div>
+    <h1 class="mt-2 truncate text-2xl font-bold tracking-tight text-navy-900">{{resource.fileName}}</h1>
+    <p class="mt-1 text-sm text-slate-500">{{number resource.sizeBytes}} bytes · Uploaded with the lesson source</p>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <a href="/resources/{{resource.id}}/download" class="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
+      Download original
+    </a>
+    <a href="/instructor/lessons/{{lesson.id}}/edit" class="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Back to lesson</a>
+  </div>
+</div>
+
+<section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <div id="resource-doc-viewer" class="doc-viewer" aria-label="Uploaded document preview"></div>
+  <noscript>
+    <p class="p-5 text-sm text-slate-500">JavaScript is required for the embedded preview. <a href="/resources/{{resource.id}}/download" class="font-semibold text-brand-600">Download the original file</a>.</p>
+  </noscript>
+</section>
+
+<p class="mt-3 text-[11px] text-slate-400">The preview renders the uploaded file. For scanned PDFs without a text layer, use Download to open the original document.</p>
+
+<script type="application/json" id="resource-preview-data">{{{json preview}}}</script>
+<script src="/js/document-preview.js"></script>
+<script>
+  (function () {
+    var dataNode = document.getElementById("resource-preview-data");
+    var viewerNode = document.getElementById("resource-doc-viewer");
+    if (!dataNode || !viewerNode || !window.DocumentPreview) return;
+    try {
+      var preview = JSON.parse(dataNode.textContent || "{}");
+      window.DocumentPreview.mount(viewerNode, preview);
+    } catch (error) {
+      console.error("Document preview failed:", error);
+      viewerNode.textContent = "The document preview could not be loaded. Download the original file instead.";
+    }
+  })();
+</script>
+
+{{> app_end}}

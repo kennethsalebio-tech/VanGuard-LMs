@@ -1,0 +1,100 @@
+{{> app_start}}
+
+<div class="mb-4 flex items-center gap-2 text-xs text-slate-400">
+  <a href="/instructor/courses" class="hover:text-brand-600">My courses</a>
+  <span>/</span>
+  <a href="/instructor/courses/{{course.id}}/builder" class="max-w-[220px] truncate hover:text-brand-600">{{course.title}}</a>
+  <span>/</span>
+  <span class="text-slate-600">Learners</span>
+</div>
+
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div>
+    <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Course roster</p>
+    <h1 class="mt-1.5 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">{{course.title}}</h1>
+    <p class="mt-1 text-sm text-slate-500">{{rows.length}} enrolled learners · {{lessons.length}} lessons</p>
+  </div>
+  <div class="flex gap-2">
+    <a href="/instructor/courses/{{course.id}}/builder" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">Builder</a>
+    <a href="/courses/{{course.id}}" class="rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Course page</a>
+  </div>
+</div>
+
+<div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  {{#if rows}}
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-5 py-3 font-semibold">Learner</th>
+            <th class="px-4 py-3 font-semibold">Department</th>
+            <th class="px-4 py-3 font-semibold">Progress</th>
+            <th class="px-4 py-3 font-semibold">Avg score</th>
+            <th class="px-4 py-3 font-semibold">Attempts</th>
+            <th class="px-5 py-3 font-semibold">Status</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {{#each rows}}
+            <tr class="align-top hover:bg-slate-50/70">
+              <td class="px-5 py-3">
+                <div class="flex items-center gap-2.5">
+                  <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white" style="background-color: {{user.avatarColor}}">{{initials user.name}}</span>
+                  <div class="min-w-0">
+                    <p class="truncate text-xs font-semibold text-navy-900">{{user.name}}</p>
+                    <p class="truncate text-[10px] text-slate-400">{{user.email}}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-xs text-slate-500">{{#if user.department}}{{user.department.name}}{{else}}—{{/if}}</td>
+              <td class="px-4 py-3">
+                <div class="flex items-center gap-2">
+                  <div class="h-1.5 w-24 overflow-hidden rounded-full bg-slate-100">
+                    <div class="h-full rounded-full bg-brand-500" style="width: {{#if progress}}{{progress.percent}}{{else}}0{{/if}}%"></div>
+                  </div>
+                  <span class="text-[11px] font-semibold text-slate-600">{{#if progress}}{{progress.percent}}{{else}}0{{/if}}%</span>
+                </div>
+                <p class="mt-1 text-[10px] text-slate-400">{{#if progress}}{{progress.completedLessons}}/{{progress.totalLessons}} lessons{{else}}Not started{{/if}}</p>
+              </td>
+              <td class="px-4 py-3 text-xs font-semibold text-navy-900">{{#if average}}{{average}}%{{else}}—{{/if}}</td>
+              <td class="px-4 py-3">
+                <p class="text-xs text-slate-600">{{attempts.length}} attempt(s)</p>
+                {{#if attempts.length}}
+                  <details class="mt-1">
+                    <summary class="cursor-pointer text-[10px] font-semibold text-brand-600">View results</summary>
+                    <div class="mt-2 space-y-1">
+                      {{#each attempts}}
+                        <p class="text-[10px] text-slate-500">
+                          {{#if passed}}<span class="font-bold text-emerald-600">Pass</span>{{else}}<span class="font-bold text-rose-600">Fail</span>{{/if}}
+                          {{score}}/{{totalQuestions}} · {{lesson.title}} · {{formatDate submittedAt}}
+                        </p>
+                      {{/each}}
+                    </div>
+                  </details>
+                {{/if}}
+              </td>
+              <td class="px-5 py-3">
+                {{#if progress}}
+                  {{#if (gte progress.percent 100)}}
+                    <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-700">Completed</span>
+                  {{else}}
+                    <span class="rounded-full bg-brand-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-brand-700">In progress</span>
+                  {{/if}}
+                {{else}}
+                  <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500">Not started</span>
+                {{/if}}
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{else}}
+    <div class="px-6 py-14 text-center">
+      <p class="text-sm font-semibold text-navy-900">No learners enrolled</p>
+      <p class="mt-1 text-xs text-slate-500">Publish the course so learners can enroll, or assign it through HR.</p>
+    </div>
+  {{/if}}
+</div>
+
+{{> app_end}}

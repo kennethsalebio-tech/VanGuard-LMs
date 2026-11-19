@@ -1,0 +1,268 @@
+{{> app_start}}
+
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div>
+    <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">People & compliance</p>
+    <h1 class="mt-1.5 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">HRMS & training compliance</h1>
+    <p class="mt-1 text-sm text-slate-500">Employee records, department structure, and automatically assigned required training.</p>
+  </div>
+  <a href="/admin/reports/export/compliance" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">Export compliance CSV</a>
+</div>
+
+<div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Employees</p>
+    <p class="mt-3 text-3xl font-extrabold text-navy-900">{{stats.employees}}</p>
+    <p class="mt-1 text-xs text-slate-400">{{stats.enrolled}} with assigned training</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Compliance</p>
+    <p class="mt-3 text-3xl font-extrabold {{#if (gte stats.compliance 80)}}text-emerald-600{{else}}text-amber-600{{/if}}">{{stats.compliance}}%</p>
+    <p class="mt-1 text-xs text-slate-400">Average completed assignments</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Pending</p>
+    <p class="mt-3 text-3xl font-extrabold text-navy-900">{{stats.pendingAssignments}}</p>
+    <p class="mt-1 text-xs text-slate-400">Assignments not yet complete</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Overdue</p>
+    <p class="mt-3 text-3xl font-extrabold {{#if stats.overdueAssignments}}text-rose-600{{else}}text-emerald-600{{/if}}">{{stats.overdueAssignments}}</p>
+    <p class="mt-1 text-xs text-slate-400">Past their due date</p>
+  </div>
+</div>
+
+<div class="grid gap-6 xl:grid-cols-3">
+  <div class="space-y-6 xl:col-span-2">
+    <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+        <div>
+          <h2 class="text-sm font-bold text-navy-900">Employee compliance</h2>
+          <p class="mt-0.5 text-xs text-slate-400">Open a row to update department, position, status, or hire date.</p>
+        </div>
+        <span class="text-xs text-slate-400">{{rows.length}} employees</span>
+      </div>
+      {{#if rows.length}}
+        <div class="divide-y divide-slate-100">
+          {{#each rows}}
+            <div class="px-5 py-4">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white" style="background-color: {{employee.avatarColor}}">{{initials employee.name}}</span>
+                <div class="min-w-0 flex-1">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <p class="truncate text-sm font-semibold text-navy-900">{{employee.name}}</p>
+                    <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-slate-500">{{employee.employeeId}}</span>
+                    <span class="rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide
+                      {{#if (eq employee.employmentStatus "active")}}bg-emerald-50 text-emerald-700
+                      {{else if (eq employee.employmentStatus "probation")}}bg-amber-50 text-amber-700
+                      {{else}}bg-slate-100 text-slate-500{{/if}}">{{employee.employmentStatus}}</span>
+                  </div>
+                  <p class="mt-0.5 truncate text-[11px] text-slate-400">{{employee.email}} · {{#if employee.department}}{{employee.department.name}}{{else}}Unassigned{{/if}}{{#if employee.position}} · {{employee.position.title}}{{/if}}</p>
+                </div>
+                <div class="flex shrink-0 items-center gap-3">
+                  <div class="text-right">
+                    <p class="text-[10px] text-slate-400">Assigned / completed</p>
+                    <p class="text-xs font-bold text-navy-900">{{assigned}} / {{completed}}</p>
+                  </div>
+                  {{#if overdue}}<span class="rounded-full bg-rose-50 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-rose-700">{{overdue}} overdue</span>{{/if}}
+                  <div class="w-24">
+                    <div class="h-1.5 overflow-hidden rounded-full bg-slate-100">
+                      <div class="h-full rounded-full {{#if (gte compliance 80)}}bg-emerald-500{{else if (gte compliance 50)}}bg-amber-500{{else}}bg-rose-500{{/if}}" style="width: {{#if compliance}}{{compliance}}{{else}}0{{/if}}%"></div>
+                    </div>
+                    <p class="mt-1 text-right text-[10px] font-semibold text-slate-500">{{#if compliance}}{{compliance}}%{{else}}N/A{{/if}}</p>
+                  </div>
+                </div>
+              </div>
+
+              <details class="mt-3">
+                <summary class="cursor-pointer text-[11px] font-semibold text-brand-600">Edit employee profile & assignments</summary>
+                <form action="/admin/employees/{{employee.id}}" method="POST" class="mt-3 grid gap-3 rounded-xl border border-slate-200 bg-slate-50/60 p-4 sm:grid-cols-2">
+                  <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                  <div>
+                    <label class="label">Department</label>
+                    <select name="departmentId" class="field">
+                      <option value="">Unassigned</option>
+                      {{#each ../departments}}
+                        <option value="{{id}}" {{#if (eq id ../employee.departmentId)}}selected{{/if}}>{{name}}</option>
+                      {{/each}}
+                    </select>
+                  </div>
+                  <div>
+                    <label class="label">Position</label>
+                    <select name="positionId" class="field">
+                      <option value="">Unassigned</option>
+                      {{#each ../positions}}
+                        <option value="{{id}}" {{#if (eq id ../employee.positionId)}}selected{{/if}}>{{title}}</option>
+                      {{/each}}
+                    </select>
+                  </div>
+                  <div>
+                    <label class="label">Employment status</label>
+                    <select name="employmentStatus" class="field">
+                      <option value="active" {{#if (eq employee.employmentStatus "active")}}selected{{/if}}>Active</option>
+                      <option value="probation" {{#if (eq employee.employmentStatus "probation")}}selected{{/if}}>Probation</option>
+                      <option value="on_leave" {{#if (eq employee.employmentStatus "on_leave")}}selected{{/if}}>On leave</option>
+                      <option value="inactive" {{#if (eq employee.employmentStatus "inactive")}}selected{{/if}}>Inactive</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="label">Date hired</label>
+                    <input type="date" name="dateHired" value="{{employee.dateHired}}" class="field" />
+                  </div>
+                  <label class="flex items-center gap-2 text-xs text-slate-600">
+                    <input type="checkbox" name="isActive" class="h-4 w-4 rounded accent-brand-600" {{#if employee.isActive}}checked{{/if}} />
+                    Account active
+                  </label>
+                  <div class="flex items-end justify-end">
+                    <button type="submit" class="rounded-lg bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-brand-700">Save employee</button>
+                  </div>
+                  <p class="text-[10px] leading-relaxed text-slate-400 sm:col-span-2">Changing department or position triggers automatic assignment of the new required training. Existing enrollments are kept.</p>
+                </form>
+              </details>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <div class="px-6 py-12 text-center">
+          <p class="text-sm font-semibold text-navy-900">No employee profiles yet</p>
+          <p class="mt-1 text-xs text-slate-500">Add an employee using the form to the right.</p>
+        </div>
+      {{/if}}
+    </section>
+
+    <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <div class="border-b border-slate-100 px-5 py-4">
+        <h2 class="text-sm font-bold text-navy-900">Compliance by department</h2>
+      </div>
+      {{#if departmentPerformance.length}}
+        <div class="divide-y divide-slate-100">
+          {{#each departmentPerformance}}
+            <div class="flex items-center justify-between px-5 py-3">
+              <div>
+                <p class="text-xs font-semibold text-navy-900">{{name}}</p>
+                <p class="text-[10px] text-slate-400">{{employees}} employees</p>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="h-1.5 w-32 overflow-hidden rounded-full bg-slate-100">
+                  <div class="h-full rounded-full bg-brand-500" style="width: {{compliance}}%"></div>
+                </div>
+                <span class="w-10 text-right text-xs font-bold text-navy-900">{{compliance}}%</span>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+      {{else}}
+        <p class="px-5 py-8 text-center text-xs text-slate-500">No department data yet.</p>
+      {{/if}}
+    </section>
+  </div>
+
+  <aside class="space-y-4">
+    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-bold text-navy-900">Add an employee</h2>
+      <form action="/admin/employees" method="POST" class="mt-3 space-y-3">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <div>
+          <label class="label" for="emp-name">Full name</label>
+          <input id="emp-name" name="name" type="text" required class="field" placeholder="Maria Santos" />
+        </div>
+        <div>
+          <label class="label" for="emp-email">Work email</label>
+          <input id="emp-email" name="email" type="email" required class="field" placeholder="maria@company.com" />
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="label" for="emp-id">Employee ID</label>
+            <input id="emp-id" name="employeeId" type="text" required class="field" placeholder="EMP-011" />
+          </div>
+          <div>
+            <label class="label" for="emp-date">Date hired</label>
+            <input id="emp-date" name="dateHired" type="date" class="field" />
+          </div>
+        </div>
+        <div>
+          <label class="label" for="emp-password">Temporary password</label>
+          <input id="emp-password" name="password" type="text" class="field" placeholder="Welcome@123" />
+        </div>
+        <div>
+          <label class="label" for="emp-dept">Department</label>
+          <select id="emp-dept" name="departmentId" class="field">
+            <option value="">Unassigned</option>
+            {{#each departments}}<option value="{{id}}">{{name}}</option>{{/each}}
+          </select>
+        </div>
+        <div>
+          <label class="label" for="emp-pos">Position</label>
+          <select id="emp-pos" name="positionId" class="field">
+            <option value="">Unassigned</option>
+            {{#each positions}}<option value="{{id}}">{{title}}</option>{{/each}}
+          </select>
+        </div>
+        <div>
+          <label class="label" for="emp-status">Employment status</label>
+          <select id="emp-status" name="employmentStatus" class="field">
+            <option value="active">Active</option>
+            <option value="probation">Probation</option>
+            <option value="on_leave">On leave</option>
+            <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <button type="submit" class="w-full rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Add employee & assign training</button>
+      </form>
+    </section>
+
+    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-bold text-navy-900">Departments</h2>
+      <div class="mt-2 space-y-1">
+        {{#each departments}}
+          <div class="flex items-center justify-between rounded-lg px-2 py-1.5 text-xs hover:bg-slate-50">
+            <span class="font-medium text-slate-700">{{name}}</span>
+            <span class="text-[10px] text-slate-400">{{members.length}} members · {{positions.length}} positions</span>
+          </div>
+        {{/each}}
+      </div>
+      <form action="/admin/departments" method="POST" class="mt-3 space-y-2 border-t border-slate-100 pt-3">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <input name="name" type="text" required class="field" placeholder="New department name" />
+        <div class="flex gap-2">
+          <input name="code" type="text" maxlength="10" class="field w-24 uppercase" placeholder="CODE" />
+          <button type="submit" class="flex-1 rounded-lg bg-brand-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-brand-700">Add</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-bold text-navy-900">Positions & required training</h2>
+      <div class="mt-2 space-y-1">
+        {{#each positions}}
+          <div class="rounded-lg px-2 py-1.5 text-xs hover:bg-slate-50">
+            <p class="font-medium text-slate-700">{{title}}</p>
+            <p class="text-[10px] text-slate-400">{{#if department}}{{department.name}}{{else}}No department{{/if}}</p>
+          </div>
+        {{/each}}
+      </div>
+      <form action="/admin/positions" method="POST" class="mt-3 space-y-2 border-t border-slate-100 pt-3">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <input name="title" type="text" required class="field" placeholder="New position title" />
+        <select name="departmentId" class="field">
+          <option value="">No department</option>
+          {{#each departments}}<option value="{{id}}">{{name}}</option>{{/each}}
+        </select>
+        <div class="rounded-lg border border-slate-200 p-2">
+          <p class="mb-1 text-[10px] font-bold uppercase tracking-wide text-slate-400">Required courses</p>
+          <div class="max-h-32 space-y-1 overflow-y-auto">
+            {{#each courses}}
+              <label class="flex items-center gap-2 text-[11px] text-slate-600">
+                <input type="checkbox" name="requiredCourseIds" value="{{id}}" class="h-3.5 w-3.5 rounded accent-brand-600" />
+                {{title}}
+              </label>
+            {{/each}}
+          </div>
+        </div>
+        <button type="submit" class="w-full rounded-lg bg-brand-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-brand-700">Create position</button>
+      </form>
+    </section>
+  </aside>
+</div>
+
+{{> app_end}}

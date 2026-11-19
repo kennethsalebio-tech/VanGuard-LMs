@@ -1,0 +1,145 @@
+{{> app_start}}
+
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div>
+    <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Teaching workspace</p>
+    <h1 class="mt-1.5 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">Live classroom</h1>
+    <p class="mt-1 text-sm text-slate-500">Start or schedule a video class for one of your courses. Every enrolled learner is invited automatically.</p>
+  </div>
+  <div class="flex flex-wrap gap-2">
+    <a href="/instructor/live/new?mode=schedule" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">Schedule a class</a>
+    <a href="/instructor/live/new" class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-700">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+      Start instant class
+    </a>
+  </div>
+</div>
+
+<div class="mb-6 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+  <div class="flex items-start gap-3">
+    <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+      <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+    </span>
+    <div>
+      <p class="text-sm font-semibold text-navy-900">Peer-to-peer WebRTC video</p>
+      <p class="mt-0.5 text-xs text-slate-500">Meetings use encrypted WebRTC media between participants. Only the instructor and learners enrolled in the selected course can open the room.</p>
+    </div>
+  </div>
+  <span class="shrink-0 rounded-full bg-emerald-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-emerald-700">
+    Encrypted media
+  </span>
+</div>
+
+<div class="space-y-6">
+  <section class="overflow-hidden rounded-2xl border border-emerald-200 bg-white shadow-sm">
+    <div class="flex items-center justify-between border-b border-emerald-100 bg-emerald-50/60 px-5 py-4">
+      <h2 class="flex items-center gap-2 text-sm font-bold text-emerald-900">
+        <span class="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+        Live now
+      </h2>
+      <span class="text-[11px] font-semibold text-emerald-700">{{liveNow.length}} session(s)</span>
+    </div>
+    {{#if liveNow}}
+      <div class="divide-y divide-slate-100">
+        {{#each liveNow}}
+          <div class="flex flex-col gap-3 px-5 py-4 lg:flex-row lg:items-center">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white" style="background-color: {{course.accent}}">{{initials course.title}}</span>
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="truncate text-sm font-semibold text-navy-900">{{title}}</p>
+                <span class="rounded-full bg-emerald-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-emerald-700">Live</span>
+              </div>
+              <p class="mt-0.5 text-xs text-slate-500">{{course.title}} · started {{formatDateTime startedAt}}</p>
+              <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400">
+                <span>{{counts.invited}} invited</span>
+                <span>·</span>
+                <span class="font-semibold text-emerald-600">{{counts.joined}} participating</span>
+                <span>·</span>
+                <span>{{durationMinutes}} min session</span>
+              </div>
+            </div>
+            <div class="flex shrink-0 flex-wrap items-center gap-2">
+              <a href="/live/{{id}}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-[11px] font-semibold text-navy-900 transition hover:bg-slate-50">Manage</a>
+              <a href="/live/{{id}}/room" class="rounded-lg bg-brand-600 px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-brand-700">Open room</a>
+              <form action="/instructor/live/{{id}}/end" method="POST" data-confirm="End this live class for everyone and save attendance?">
+                <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                <button type="submit" class="rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-[11px] font-semibold text-rose-700 transition hover:bg-rose-100">End</button>
+              </form>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="px-5 py-8 text-center text-xs text-slate-500">No live session right now. Start an instant class when you are ready to teach.</p>
+    {{/if}}
+  </section>
+
+  <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+      <h2 class="text-sm font-bold text-navy-900">Upcoming classes</h2>
+      <span class="text-[11px] font-semibold text-slate-400">{{upcoming.length}} scheduled</span>
+    </div>
+    {{#if upcoming}}
+      <div class="divide-y divide-slate-100">
+        {{#each upcoming}}
+          <div class="flex flex-col gap-3 px-5 py-4 lg:flex-row lg:items-center">
+            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white" style="background-color: {{course.accent}}">{{initials course.title}}</span>
+            <div class="min-w-0 flex-1">
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="truncate text-sm font-semibold text-navy-900">{{title}}</p>
+                <span class="rounded-full bg-amber-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-700">Scheduled</span>
+              </div>
+              <p class="mt-0.5 text-xs text-slate-500">{{course.title}} · {{formatDateTime scheduledStart}}</p>
+              <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400">
+                <span>{{counts.invited}} learners invited</span>
+                <span>·</span>
+                <span>{{durationMinutes}} min</span>
+              </div>
+            </div>
+            <div class="flex shrink-0 flex-wrap items-center gap-2">
+              <a href="/live/{{id}}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-[11px] font-semibold text-navy-900 transition hover:bg-slate-50">Details</a>
+              <form action="/instructor/live/{{id}}/start" method="POST">
+                <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                <button type="submit" class="rounded-lg bg-brand-600 px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-brand-700">Start now</button>
+              </form>
+              <form action="/instructor/live/{{id}}/cancel" method="POST" data-confirm="Cancel this scheduled live class? Enrolled learners will be notified.">
+                <input type="hidden" name="_csrf" value="{{../csrfToken}}" />
+                <button type="submit" class="rounded-lg border border-slate-300 px-3 py-1.5 text-[11px] font-semibold text-slate-600 transition hover:bg-slate-50">Cancel</button>
+              </form>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="px-5 py-8 text-center text-xs text-slate-500">No scheduled classes. Use “Schedule a class” to plan your next session.</p>
+    {{/if}}
+  </section>
+
+  <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+      <h2 class="text-sm font-bold text-navy-900">Past sessions</h2>
+      <span class="text-[11px] font-semibold text-slate-400">Attendance is saved per participant</span>
+    </div>
+    {{#if past}}
+      <div class="divide-y divide-slate-100">
+        {{#each past}}
+          <div class="flex flex-col gap-3 px-5 py-3.5 sm:flex-row sm:items-center">
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-xs font-semibold text-navy-900">{{title}}</p>
+              <p class="mt-0.5 text-[11px] text-slate-400">{{course.title}} · {{formatDateTime scheduledStart}}</p>
+            </div>
+            <div class="flex shrink-0 items-center gap-3">
+              <span class="rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide {{#if (eq status "ended")}}bg-slate-100 text-slate-500{{else}}bg-rose-50 text-rose-700{{/if}}">{{status}}</span>
+              <span class="text-[11px] text-slate-400">{{counts.joined}} joined</span>
+              <a href="/live/{{id}}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-[11px] font-semibold text-navy-900 transition hover:bg-slate-50">Attendance</a>
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <p class="px-5 py-8 text-center text-xs text-slate-500">Finished sessions will appear here with their attendance records.</p>
+    {{/if}}
+  </section>
+</div>
+
+{{> app_end}}

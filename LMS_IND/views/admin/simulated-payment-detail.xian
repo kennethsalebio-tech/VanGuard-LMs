@@ -1,0 +1,131 @@
+{{> app_start}}
+
+<nav class="mb-5 flex flex-wrap items-center gap-2 text-xs text-slate-400" aria-label="Breadcrumb">
+  <a href="/admin/finance" class="font-semibold hover:text-brand-600">Finance &amp; Billing</a>
+  <span>/</span>
+  <a href="/admin/finance/simulated" class="font-semibold hover:text-brand-600">Simulated payments</a>
+  <span>/</span>
+  <span class="font-mono text-slate-600">{{transaction.reference}}</span>
+</nav>
+
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div>
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-amber-800">DEMO transaction</span>
+      {{#if (eq transaction.status "simulated")}}
+        <span class="rounded-full bg-sky-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-sky-700">Simulated</span>
+      {{else if (eq transaction.status "cancelled")}}
+        <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500">Cancelled</span>
+      {{else}}
+        <span class="rounded-full bg-rose-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-rose-700">Failed</span>
+      {{/if}}
+    </div>
+    <h1 class="mt-2 break-all text-2xl font-bold tracking-tight text-navy-900">{{transaction.reference}}</h1>
+    <p class="mt-1 text-sm text-slate-500">Recorded {{formatDateTime transaction.createdAt}} · {{transaction.paymentMethodName}}</p>
+  </div>
+  <a href="/admin/finance/simulated" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">Back to demo ledger</a>
+</div>
+
+<div class="mb-6 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+  <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+  <p class="text-xs leading-relaxed"><span class="font-bold">Not a real payment.</span> This record is excluded from live revenue and cannot be used as a receipt or proof of settlement. No course access was granted.</p>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+  <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+    <h2 class="text-sm font-bold text-navy-900">Transaction details</h2>
+    <dl class="mt-4 grid gap-3 text-xs sm:grid-cols-2">
+      <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+        <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Transaction reference</dt>
+        <dd class="mt-1 break-all font-mono text-[11px] font-semibold text-navy-900">{{transaction.reference}}</dd>
+      </div>
+      <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+        <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Invoice</dt>
+        <dd class="mt-1 break-all font-mono text-[11px] font-semibold text-navy-900">{{transaction.invoiceReference}}</dd>
+      </div>
+      <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+        <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Student</dt>
+        <dd class="mt-1 font-semibold text-navy-900">{{transaction.studentName}}</dd>
+        <dd class="text-[10px] text-slate-400">{{transaction.studentEmail}}</dd>
+      </div>
+      <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+        <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Course</dt>
+        <dd class="mt-1 font-semibold text-navy-900">{{transaction.courseTitle}}</dd>
+      </div>
+      <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+        <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Method</dt>
+        <dd class="mt-1 font-semibold text-navy-900">{{transaction.paymentMethodName}}</dd>
+      </div>
+      <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+        <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Amount</dt>
+        <dd class="mt-1 text-base font-extrabold text-navy-900">{{peso transaction.amount transaction.currency}}</dd>
+        <dd class="text-[10px] font-semibold uppercase tracking-wide text-amber-600">Not collected</dd>
+      </div>
+      <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+        <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Payment mode</dt>
+        <dd class="mt-1 font-semibold uppercase text-navy-900">{{transaction.paymentMode}}</dd>
+      </div>
+      <div class="rounded-xl bg-slate-50 px-3 py-2.5">
+        <dt class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Recorded at</dt>
+        <dd class="mt-1 font-semibold text-navy-900">{{formatDateTime transaction.createdAt}}</dd>
+      </div>
+    </dl>
+
+    {{#if transaction.failureReason}}
+      <div class="mt-4 rounded-xl border border-slate-200 bg-white p-3 text-xs text-slate-600">
+        <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Cancellation / failure note</p>
+        <p class="mt-1">{{transaction.failureReason}}</p>
+      </div>
+    {{/if}}
+  </section>
+
+  <aside class="space-y-4">
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-bold text-navy-900">Demo invoice</h2>
+      {{#if invoice}}
+        <dl class="mt-4 space-y-3 text-xs">
+          <div class="flex items-start justify-between gap-3">
+            <dt class="text-slate-400">Reference</dt>
+            <dd class="break-all text-right font-mono text-[10px] font-semibold text-navy-900">{{invoice.reference}}</dd>
+          </div>
+          <div class="flex items-start justify-between gap-3">
+            <dt class="text-slate-400">Description</dt>
+            <dd class="max-w-[190px] text-right font-semibold text-navy-900">{{invoice.description}}</dd>
+          </div>
+          <div class="flex items-start justify-between gap-3">
+            <dt class="text-slate-400">Amount</dt>
+            <dd class="font-semibold text-navy-900">{{peso invoice.amount invoice.currency}}</dd>
+          </div>
+          <div class="flex items-start justify-between gap-3">
+            <dt class="text-slate-400">Status</dt>
+            <dd class="rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide {{#if (eq invoice.status "simulated")}}bg-sky-50 text-sky-700{{else if (eq invoice.status "failed")}}bg-rose-50 text-rose-700{{else if (eq invoice.status "cancelled")}}bg-slate-100 text-slate-500{{else}}bg-amber-50 text-amber-700{{/if}}">{{invoice.status}}</dd>
+          </div>
+        </dl>
+      {{else}}
+        <p class="mt-3 text-xs text-slate-500">Invoice data is unavailable.</p>
+      {{/if}}
+    </div>
+
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-bold text-navy-900">Method</h2>
+      <div class="mt-3 flex items-center gap-3">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl text-white" style="background: {{#if method}}{{method.accent}}{{else}}#475569{{/if}};">
+          {{#if (eq transaction.paymentMethod "gcash")}}
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M5 6h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zm3 8h4" /></svg>
+          {{else if (eq transaction.paymentMethod "maya")}}
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          {{else}}
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10l9-7 9 7M5 10v10h14V10M9 20v-6h6v6" /></svg>
+          {{/if}}
+        </span>
+        <div>
+          <p class="text-xs font-bold text-navy-900">{{transaction.paymentMethodName}}</p>
+          <p class="text-[10px] uppercase tracking-wide text-slate-400">{{#if method}}{{method.kicker}}{{else}}Demo method{{/if}}</p>
+        </div>
+      </div>
+      <p class="mt-3 text-[11px] leading-relaxed text-slate-500">This method is a generic simulation interface. No affiliation with the real provider is implied.</p>
+    </div>
+  </aside>
+</div>
+
+{{> app_end}}

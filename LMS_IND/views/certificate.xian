@@ -1,0 +1,93 @@
+{{> app_start}}
+
+<div class="mx-auto max-w-4xl">
+  <div class="no-print mb-5 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+    <div>
+      <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Credential</p>
+      <h1 class="mt-1 text-xl font-bold text-navy-900">Certificate of completion</h1>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a href="/certificates" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">Back</a>
+      <a href="/verify?code={{certificate.verificationCode}}" class="rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">Verify online</a>
+      <button type="button" onclick="window.print()" class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+        Print / Save as PDF
+      </button>
+    </div>
+  </div>
+
+  <div class="certificate-sheet relative overflow-hidden rounded-2xl border-2 border-navy-900 bg-white p-8 shadow-card sm:p-12">
+    <div class="pointer-events-none absolute -right-20 -top-20 h-64 w-64 rounded-full border-[24px] border-brand-100/60"></div>
+    <div class="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full border-[24px] border-emerald-100/60"></div>
+
+    <div class="relative">
+      <div class="flex flex-col items-center text-center">
+        <div class="flex items-center gap-3">
+          <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-brand-500 shadow-lg shadow-brand-500/20">
+            <svg class="h-6 w-6 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+          </span>
+          <div class="text-left">
+            <p class="text-lg font-bold leading-tight text-navy-900">Vanguard</p>
+            <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-400">Learning</p>
+          </div>
+        </div>
+        <p class="mt-8 text-[11px] font-bold uppercase tracking-[0.3em] text-brand-600">Certificate of completion</p>
+        <p class="mt-3 text-sm text-slate-500">This certifies that</p>
+        <h1 class="mt-3 text-3xl font-extrabold tracking-tight text-navy-900 sm:text-4xl">{{certificate.learnerName}}</h1>
+        <p class="mt-3 text-sm text-slate-500">has successfully completed all lessons, knowledge checks, and requirements of</p>
+        <h2 class="mt-3 max-w-2xl text-xl font-bold leading-snug text-brand-700 sm:text-2xl">{{certificate.courseTitle}}</h2>
+        <p class="mt-4 max-w-xl text-xs leading-relaxed text-slate-500">
+          Awarded by Vanguard Learning in recognition of demonstrated competency. This credential is
+          verifiable using the code below.
+        </p>
+      </div>
+
+      <div class="mt-10 grid gap-6 border-t border-slate-200 pt-6 text-center sm:grid-cols-3">
+        <div>
+          <p class="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">Issued on</p>
+          <p class="mt-1 text-sm font-semibold text-navy-900">{{formatDate certificate.issuedAt}}</p>
+        </div>
+        <div>
+          <p class="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">Certificate ID</p>
+          <p class="mt-1 font-mono text-sm font-semibold text-navy-900">{{certificate.certificateId}}</p>
+        </div>
+        <div>
+          <p class="text-[9px] font-bold uppercase tracking-[0.14em] text-slate-400">Verification code</p>
+          <p class="mt-1 font-mono text-sm font-semibold text-navy-900">{{certificate.verificationCode}}</p>
+        </div>
+      </div>
+
+      <div class="mt-8 flex flex-col items-center justify-between gap-4 sm:flex-row">
+        <div class="text-center sm:text-left">
+          <p class="border-t border-slate-400 pt-1 text-sm font-semibold text-navy-900">{{certificate.instructorName}}</p>
+          <p class="text-[10px] uppercase tracking-wide text-slate-400">Instructor of record</p>
+        </div>
+        <div class="flex h-16 w-16 items-center justify-center rounded-full border-2 border-emerald-600 text-center">
+          <div>
+            <p class="text-[8px] font-bold uppercase tracking-wide text-emerald-700">Verified</p>
+            <p class="text-[8px] text-emerald-600">Vanguard</p>
+          </div>
+        </div>
+        <div class="text-center sm:text-right">
+          <p class="border-t border-slate-400 pt-1 text-sm font-semibold text-navy-900">Vanguard Learning</p>
+          <p class="text-[10px] uppercase tracking-wide text-slate-400">Learning & development</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <p class="no-print mt-4 text-center text-xs text-slate-400">
+    Tip: use your browser's print dialog and choose “Save as PDF” for a portable copy. A scanned QR code
+    is not implemented in this build; share the verification code instead.
+  </p>
+</div>
+
+{{#if autoPrint}}
+  <script>
+    window.addEventListener("load", function () {
+      window.setTimeout(function () { window.print(); }, 350);
+    });
+  </script>
+{{/if}}
+
+{{> app_end}}

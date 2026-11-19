@@ -1,0 +1,155 @@
+{{> app_start}}
+
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div>
+    <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Course catalog</p>
+    <h1 class="mt-1.5 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">Explore training</h1>
+    <p class="mt-1 text-sm text-slate-500">Published courses you can enroll in and study at your own pace.</p>
+  </div>
+  <div class="flex items-center gap-2">
+    <span class="rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600">{{catalog.length}} published courses</span>
+  </div>
+</div>
+
+<div class="mb-5 flex flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:flex-row sm:items-center">
+  <div class="relative flex-1">
+    <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-4.35-4.35M17 11a6 6 0 11-12 0 6 6 0 0112 0z" /></svg>
+    <input id="course-search" type="search" placeholder="Search by course, category, or instructor…" class="field pl-9" />
+  </div>
+  <select id="category-filter" class="field sm:w-56">
+    <option value="">All categories</option>
+    {{#each categories}}
+      <option value="{{name}}">{{name}}</option>
+    {{/each}}
+  </select>
+</div>
+
+{{#if myCourses}}
+  <div class="mb-8">
+    <h2 class="mb-3 text-sm font-bold text-navy-900">In progress</h2>
+    <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      {{#each myCourses}}
+        <a href="/courses/{{id}}" class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-card">
+          <div class="flex items-start justify-between gap-3">
+            <span class="flex h-11 w-11 items-center justify-center rounded-xl text-sm font-bold text-white" style="background-color: {{accent}}">{{initials title}}</span>
+            {{#if paymentBadge}}
+              <span class="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide {{#if (eq paymentBadge.tone "paid")}}bg-emerald-50 text-emerald-700{{else if (eq paymentBadge.tone "pending")}}bg-amber-50 text-amber-700{{else if (eq paymentBadge.tone "failed")}}bg-rose-50 text-rose-700{{else if (eq paymentBadge.tone "refunded")}}bg-sky-50 text-sky-700{{else}}bg-slate-100 text-slate-500{{/if}}">{{paymentBadge.label}}</span>
+            {{else}}
+              <span class="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-700">Enrolled</span>
+            {{/if}}
+          </div>
+          <h3 class="mt-3 line-clamp-1 text-sm font-bold text-navy-900">{{title}}</h3>
+          <p class="mt-1 line-clamp-2 text-xs leading-relaxed text-slate-500">{{description}}</p>
+          <div class="mt-4 h-1.5 overflow-hidden rounded-full bg-slate-100">
+            <div class="h-full rounded-full bg-brand-500" style="width: {{progress.percent}}%"></div>
+          </div>
+          <div class="mt-2 flex items-center justify-between text-[11px] text-slate-400">
+            <span>{{progress.completedLessons}} / {{progress.totalLessons}} lessons</span>
+            <span class="font-semibold text-brand-600">{{progress.percent}}%</span>
+          </div>
+        </a>
+      {{/each}}
+    </div>
+  </div>
+{{/if}}
+
+<div id="course-grid" class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+  {{#each catalog}}
+    <article class="course-card group flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5" data-title="{{title}}" data-category="{{#if category}}{{category.name}}{{/if}}" data-instructor="{{instructor.name}}">
+      <div class="relative h-[108px] overflow-hidden px-5 py-4" style="background-color: {{accent}}">
+        <div class="pointer-events-none absolute -right-8 -top-10 h-32 w-32 rounded-full bg-white/10"></div>
+        <div class="pointer-events-none absolute -bottom-12 left-14 h-28 w-28 rounded-full bg-white/10"></div>
+        <div class="relative flex items-start justify-between gap-3">
+          <span class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white/15 text-[12px] font-bold text-white backdrop-blur">{{initials title}}</span>
+          <div class="flex flex-wrap justify-end gap-1.5">
+            {{#if paymentBadge}}
+              <span class="rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide {{#if (eq paymentBadge.tone "paid")}}bg-emerald-300/95 text-emerald-950{{else if (eq paymentBadge.tone "pending")}}bg-amber-300/95 text-amber-950{{else if (eq paymentBadge.tone "failed")}}bg-rose-300/95 text-rose-950{{else if (eq paymentBadge.tone "cancelled")}}bg-slate-200/95 text-slate-700{{else}}bg-sky-300/95 text-sky-950{{/if}}">{{paymentBadge.label}}</span>
+            {{else}}
+              {{#unless isPaid}}
+                <span class="rounded-full bg-emerald-400/95 px-2.5 py-1 text-[9px] font-bold uppercase tracking-wide text-emerald-950">Free</span>
+              {{/unless}}
+            {{/if}}
+          </div>
+        </div>
+        <p class="relative mt-3 text-[9px] font-bold uppercase tracking-[0.16em] text-white/80">{{#if category}}{{category.name}}{{else}}Course{{/if}}</p>
+      </div>
+
+      <div class="flex flex-1 flex-col p-5">
+        <div class="flex flex-wrap items-center gap-2 text-[10px] font-medium text-slate-400">
+          <span class="rounded-full bg-slate-100 px-2 py-0.5 font-bold uppercase tracking-wide text-slate-500">{{level}}</span>
+          <span>{{durationHours}} hr</span>
+          <span>·</span>
+          <span>{{questionCount}} questions</span>
+        </div>
+        <h3 class="mt-2 line-clamp-2 text-[15px] font-bold leading-snug text-navy-900">{{title}}</h3>
+        <p class="mt-2 line-clamp-3 flex-1 text-[13px] leading-relaxed text-slate-500">{{description}}</p>
+
+        <div class="mt-4 flex items-center justify-between gap-3 border-t border-slate-100 pt-4">
+          <div class="flex min-w-0 items-center gap-2">
+            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-50 text-[10px] font-bold text-brand-700">{{initials instructor.name}}</span>
+            <div class="min-w-0">
+              <p class="truncate text-[11px] font-semibold text-navy-900">{{instructor.name}}</p>
+              <p class="text-[9px] text-slate-400">Instructor</p>
+            </div>
+          </div>
+          {{#if isPaid}}
+            <p class="shrink-0 text-[13px] font-extrabold text-navy-900">{{peso price currency}}</p>
+          {{/if}}
+        </div>
+
+        {{#if enrollment}}
+          <a href="/courses/{{id}}" class="mt-4 flex items-center justify-center gap-2 rounded-lg bg-brand-500 px-4 py-2.5 text-[13px] font-semibold text-white transition hover:bg-brand-600">
+            Continue course
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+          </a>
+        {{else}}
+          <a href="/courses/{{id}}" class="mt-4 flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-[13px] font-semibold text-navy-900 transition hover:border-brand-300 hover:bg-brand-50/50 hover:text-brand-700">
+            View course
+          </a>
+        {{/if}}
+      </div>
+    </article>
+  {{/each}}
+</div>
+
+<div id="no-results" class="hidden rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
+  <p class="text-sm font-semibold text-navy-900">No courses match your filters</p>
+  <p class="mt-1 text-xs text-slate-500">Try a different search term or category.</p>
+</div>
+
+{{#unless catalog}}
+  <div class="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
+    <p class="text-sm font-semibold text-navy-900">No published courses yet</p>
+    <p class="mt-1 text-xs text-slate-500">Instructors must publish a course before it appears here.</p>
+  </div>
+{{/unless}}
+
+<script>
+  (function () {
+    const search = document.getElementById("course-search");
+    const category = document.getElementById("category-filter");
+    const cards = Array.from(document.querySelectorAll(".course-card"));
+    const empty = document.getElementById("no-results");
+    function filter() {
+      const term = (search.value || "").toLowerCase().trim();
+      const cat = category.value;
+      let visible = 0;
+      cards.forEach((card) => {
+        const matchesTerm =
+          !term ||
+          card.dataset.title.toLowerCase().includes(term) ||
+          card.dataset.instructor.toLowerCase().includes(term) ||
+          (card.dataset.category || "").toLowerCase().includes(term);
+        const matchesCategory = !cat || card.dataset.category === cat;
+        const show = matchesTerm && matchesCategory;
+        card.classList.toggle("hidden", !show);
+        if (show) visible += 1;
+      });
+      empty.classList.toggle("hidden", visible !== 0 || cards.length === 0);
+    }
+    search?.addEventListener("input", filter);
+    category?.addEventListener("change", filter);
+  })();
+</script>
+
+{{> app_end}}

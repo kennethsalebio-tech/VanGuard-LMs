@@ -1,0 +1,179 @@
+{{> app_start}}
+
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div>
+    <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Billing</p>
+    <h1 class="mt-1.5 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">Billing &amp; demo payments</h1>
+    <p class="mt-1 max-w-2xl text-sm text-slate-500">Practice the GCash-inspired, Maya-inspired, and MariBank-inspired payment flows without moving real money.</p>
+  </div>
+  <a href="/courses" class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">
+    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
+    Browse courses
+  </a>
+</div>
+
+<div class="mb-6 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+  <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+  <div>
+    <p class="font-bold">DEMO / SIMULATION ONLY</p>
+    <p class="mt-0.5 text-xs leading-relaxed">These invoices and transactions are for demonstration. Simulated payments do not settle a real invoice, unlock a paid course, or count as collected revenue.</p>
+  </div>
+</div>
+
+<div class="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Demo amount due</p>
+    <p class="mt-3 text-3xl font-extrabold text-navy-900">{{peso data.totals.amountDue}}</p>
+    <p class="mt-1 text-xs text-slate-400">{{number data.totals.openInvoices}} open demo invoice{{#if (ne data.totals.openInvoices 1)}}s{{/if}}</p>
+  </article>
+  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Simulated total</p>
+    <p class="mt-3 text-3xl font-extrabold text-emerald-700">{{peso data.totals.simulatedAmount}}</p>
+    <p class="mt-1 text-xs text-slate-400">Never counted as revenue</p>
+  </article>
+  <article class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-slate-400">Simulations</p>
+    <p class="mt-3 text-3xl font-extrabold text-navy-900">{{number data.totals.simulatedCount}}</p>
+    <p class="mt-1 text-xs text-slate-400">Successful demo transactions</p>
+  </article>
+  <article class="rounded-2xl border border-amber-200 bg-amber-50/70 p-5 shadow-sm">
+    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-amber-700">Payment mode</p>
+    <p class="mt-3 text-2xl font-extrabold text-amber-900">DEMO</p>
+    <p class="mt-1 text-xs text-amber-700">No real payment gateway is contacted</p>
+  </article>
+</div>
+
+<div class="grid gap-6 xl:grid-cols-3">
+  <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm xl:col-span-2">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+      <div>
+        <h2 class="text-sm font-bold text-navy-900">Demo invoices</h2>
+        <p class="mt-0.5 text-xs text-slate-400">Open an invoice to continue, or review a completed simulation.</p>
+      </div>
+      <span class="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-700">Not real bills</span>
+    </div>
+
+    {{#if data.invoices.length}}
+      <div class="divide-y divide-slate-100">
+        {{#each data.invoices}}
+          <div class="flex flex-col gap-3 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="min-w-0">
+              <div class="flex flex-wrap items-center gap-2">
+                <p class="font-mono text-xs font-bold text-navy-900">{{reference}}</p>
+                {{#if (eq status "open")}}
+                  <span class="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">Open</span>
+                {{else if (eq status "simulated")}}
+                  <span class="rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-sky-700">Simulated</span>
+                {{else if (eq status "failed")}}
+                  <span class="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-rose-700">Failed</span>
+                {{else}}
+                  <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-500">Cancelled</span>
+                {{/if}}
+              </div>
+              <p class="mt-1 text-sm font-semibold text-navy-900">{{description}}</p>
+              <p class="mt-0.5 text-[11px] text-slate-400">Created {{formatDateTime createdAt}}{{#if transaction}} · transaction {{transaction.reference}}{{/if}}</p>
+            </div>
+            <div class="flex shrink-0 items-center gap-3 sm:flex-col sm:items-end">
+              <p class="text-sm font-extrabold text-navy-900">{{peso amount currency}}</p>
+              {{#if (eq status "open")}}
+                <a href="/billing/invoices/{{reference}}" class="rounded-lg bg-brand-600 px-3 py-2 text-xs font-semibold text-white transition hover:bg-brand-700">Choose method</a>
+              {{else if transaction}}
+                <a href="/billing/transactions/{{transaction.reference}}" class="rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-navy-900 transition hover:bg-slate-50">View result</a>
+              {{/if}}
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    {{else}}
+      <div class="px-5 py-12 text-center">
+        <p class="text-sm font-semibold text-navy-900">No demo invoices yet</p>
+        <p class="mx-auto mt-1 max-w-md text-xs leading-relaxed text-slate-500">Create one from a paid course on the right. It is a practice invoice only and is clearly labeled DEMO everywhere.</p>
+      </div>
+    {{/if}}
+  </section>
+
+  <aside class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+    <h2 class="text-sm font-bold text-navy-900">Create a demo invoice</h2>
+    <p class="mt-1 text-xs leading-relaxed text-slate-500">The amount is read from the course record on the server. You can create practice invoices only for paid courses you are not enrolled in.</p>
+
+    {{#if data.courses.length}}
+      <form action="/billing/invoices" method="POST" class="mt-4 space-y-3">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <label class="label" for="demo-course">Paid course</label>
+        <select class="field" id="demo-course" name="courseId" required>
+          <option value="">Select a course</option>
+          {{#each data.courses}}
+            <option value="{{id}}">{{title}} — {{peso price currency}}</option>
+          {{/each}}
+        </select>
+        <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-navy-900 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-navy-800">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" /></svg>
+          Create demo invoice
+        </button>
+      </form>
+    {{else}}
+      <p class="mt-4 rounded-xl border border-dashed border-slate-200 px-3 py-6 text-center text-xs text-slate-500">No eligible paid courses right now. You may already be enrolled in the paid catalogue.</p>
+    {{/if}}
+
+    <div class="mt-4 rounded-xl border border-slate-100 bg-slate-50 p-3 text-[11px] leading-relaxed text-slate-500">
+      The simulated checkout never asks for a real GCash, Maya, MariBank, bank, card, MPIN, password, or OTP credential.
+    </div>
+  </aside>
+</div>
+
+<section class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+  <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+    <div>
+      <h2 class="text-sm font-bold text-navy-900">Demo payment history</h2>
+      <p class="mt-0.5 text-xs text-slate-400">Every row is a simulated transaction and is excluded from actual revenue.</p>
+    </div>
+    <span class="rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-700">DEMO only</span>
+  </div>
+
+  {{#if data.transactions.length}}
+    <div class="overflow-x-auto">
+      <table class="min-w-full text-left text-sm">
+        <thead class="bg-slate-50 text-[10px] uppercase tracking-wide text-slate-500">
+          <tr>
+            <th class="px-5 py-3 font-semibold">Transaction</th>
+            <th class="px-4 py-3 font-semibold">Invoice</th>
+            <th class="px-4 py-3 font-semibold">Course</th>
+            <th class="px-4 py-3 font-semibold">Method</th>
+            <th class="px-4 py-3 font-semibold">Amount</th>
+            <th class="px-4 py-3 font-semibold">Date</th>
+            <th class="px-4 py-3 font-semibold">Status</th>
+            <th class="px-5 py-3 font-semibold"></th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-100">
+          {{#each data.transactions}}
+            <tr class="hover:bg-slate-50/60">
+              <td class="px-5 py-3 font-mono text-[11px] font-semibold text-navy-900">{{reference}}</td>
+              <td class="px-4 py-3 font-mono text-[10px] text-slate-500">{{invoiceReference}}</td>
+              <td class="max-w-[200px] px-4 py-3 text-xs text-slate-600"><span class="line-clamp-1">{{courseTitle}}</span></td>
+              <td class="px-4 py-3 text-xs text-slate-600">{{paymentMethodName}}</td>
+              <td class="px-4 py-3 text-xs font-semibold text-navy-900">{{peso amount currency}}</td>
+              <td class="px-4 py-3 text-[11px] text-slate-500">{{formatDateTime createdAt}}</td>
+              <td class="px-4 py-3">
+                {{#if (eq status "simulated")}}
+                  <span class="rounded-full bg-sky-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-sky-700">Simulated</span>
+                {{else if (eq status "cancelled")}}
+                  <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-500">Cancelled</span>
+                {{else}}
+                  <span class="rounded-full bg-rose-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-rose-700">Failed</span>
+                {{/if}}
+              </td>
+              <td class="px-5 py-3 text-right">
+                <a href="/billing/transactions/{{reference}}" class="text-xs font-semibold text-brand-600 hover:text-brand-700">Details</a>
+              </td>
+            </tr>
+          {{/each}}
+        </tbody>
+      </table>
+    </div>
+  {{else}}
+    <p class="px-5 py-12 text-center text-sm text-slate-500">No demo transactions yet. Create an invoice and choose a payment method to try the simulation.</p>
+  {{/if}}
+</section>
+
+{{> app_end}}

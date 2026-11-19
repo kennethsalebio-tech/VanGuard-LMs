@@ -1,0 +1,77 @@
+{{> app_start}}
+
+<div class="mb-6">
+  <p class="text-xs font-bold uppercase tracking-[0.16em] text-brand-600">Credentials</p>
+  <h1 class="mt-1.5 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">Certificates</h1>
+  <p class="mt-1 text-sm text-slate-500">Every completed course with certification enabled issues a verifiable credential.</p>
+</div>
+
+{{#if certificates}}
+  <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+    {{#each certificates}}
+      <article class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div class="relative border-b border-slate-100 bg-gradient-to-br from-brand-500 to-brand-700 px-5 py-6 text-white">
+          <div class="pointer-events-none absolute right-0 top-0 h-24 w-24 rounded-full bg-white/10 blur-2xl"></div>
+          <div class="flex items-start justify-between">
+            <span class="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
+              <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
+            </span>
+            <span class="rounded-full bg-emerald-400/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-100">Verified</span>
+          </div>
+          <p class="mt-4 text-[10px] font-bold uppercase tracking-[0.16em] text-brand-100">Certificate of completion</p>
+          <h2 class="mt-1 line-clamp-2 text-base font-bold leading-snug">{{courseTitle}}</h2>
+        </div>
+        <div class="p-5">
+          <dl class="space-y-2 text-xs">
+            <div class="flex items-center justify-between gap-3">
+              <dt class="text-slate-400">Credential ID</dt>
+              <dd class="font-mono font-semibold text-navy-900">{{certificateId}}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="text-slate-400">Issued</dt>
+              <dd class="font-medium text-slate-600">{{formatDate issuedAt}}</dd>
+            </div>
+            <div class="flex items-center justify-between gap-3">
+              <dt class="text-slate-400">Instructor</dt>
+              <dd class="max-w-[150px] truncate font-medium text-slate-600">{{instructorName}}</dd>
+            </div>
+          </dl>
+          <div class="mt-4 flex gap-2">
+            <a href="/certificates/{{id}}" class="flex flex-1 items-center justify-center rounded-xl bg-brand-600 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-brand-700">Open certificate</a>
+            <a href="/verify?code={{verificationCode}}" class="rounded-xl border border-slate-300 px-3 py-2.5 text-xs font-semibold text-navy-900 transition hover:bg-slate-50">Verify</a>
+          </div>
+        </div>
+      </article>
+    {{/each}}
+  </div>
+{{else}}
+  <div class="rounded-2xl border border-dashed border-slate-300 bg-white px-6 py-14 text-center">
+    <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 text-brand-600">
+      <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
+    </span>
+    <h2 class="mt-4 text-lg font-bold text-navy-900">No certificates yet</h2>
+    <p class="mx-auto mt-1 max-w-md text-sm text-slate-500">Complete every lesson in a course and pass its knowledge checks to earn a certificate. Completed courses appear below.</p>
+    <a href="/courses" class="mt-5 inline-flex rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Find a course</a>
+  </div>
+{{/if}}
+
+{{#if completedCourses.length}}
+  <section class="mt-8 rounded-2xl border border-slate-200 bg-white shadow-sm">
+    <div class="border-b border-slate-100 px-5 py-4">
+      <h2 class="text-sm font-bold text-navy-900">Completed courses</h2>
+    </div>
+    <div class="divide-y divide-slate-100">
+      {{#each completedCourses}}
+        <div class="flex flex-col gap-2 px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p class="text-sm font-semibold text-navy-900">{{course.title}}</p>
+            <p class="mt-0.5 text-xs text-slate-400">Completed {{formatDate completedAt}}</p>
+          </div>
+          <a href="/courses/{{courseId}}" class="text-xs font-semibold text-brand-600 hover:text-brand-700">Review course →</a>
+        </div>
+      {{/each}}
+    </div>
+  </section>
+{{/if}}
+
+{{> app_end}}

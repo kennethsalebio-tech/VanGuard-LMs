@@ -1,0 +1,182 @@
+{{> app_start}}
+
+<nav class="mb-5 flex flex-wrap items-center gap-2 text-xs text-slate-400" aria-label="Breadcrumb">
+  <a href="/billing" class="font-semibold hover:text-brand-600">Billing</a>
+  <span>/</span>
+  <a href="/billing/invoices/{{invoice.reference}}" class="font-semibold hover:text-brand-600">Choose a method</a>
+  <span>/</span>
+  <span class="text-slate-600">{{method.name}}</span>
+</nav>
+
+<div class="mb-5 flex items-start gap-3 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-900">
+  <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
+  <div>
+    <p class="text-sm font-bold">DEMO PAYMENT — simulation only</p>
+    <p class="mt-0.5 text-xs leading-relaxed">No real money will move. Do not enter any real wallet or banking credential, MPIN, password, card number, or OTP.</p>
+  </div>
+</div>
+
+<div class="grid gap-6 lg:grid-cols-[1.15fr_0.85fr]">
+  <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-card">
+    <div class="relative overflow-hidden px-6 py-7 text-white sm:px-8" style="background: linear-gradient(135deg, {{method.accent}} 0%, {{method.accentDark}} 100%);">
+      <div class="pointer-events-none absolute -right-12 -top-16 h-48 w-48 rounded-full border border-white/15"></div>
+      <div class="pointer-events-none absolute -bottom-24 -left-10 h-56 w-56 rounded-full border border-white/10"></div>
+      <div class="relative flex items-start justify-between gap-4">
+        <div class="flex items-center gap-4">
+          <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25">
+            {{#if (eq method.icon "wallet")}}
+              <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M5 6h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zm3 8h4" /></svg>
+            {{else if (eq method.icon "spark")}}
+              <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            {{else}}
+              <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.7" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10l9-7 9 7M5 10v10h14V10M9 20v-6h6v6" /></svg>
+            {{/if}}
+          </span>
+          <div>
+            <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-white/70">{{method.kicker}}</p>
+            <h1 class="mt-0.5 text-xl font-extrabold tracking-tight sm:text-2xl">{{method.name}}</h1>
+          </div>
+        </div>
+        <span class="rounded-full border border-white/30 bg-white/15 px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.14em] text-white">DEMO</span>
+      </div>
+
+      <div class="relative mt-7">
+        <p class="text-[10px] font-bold uppercase tracking-[0.16em] text-white/70">Demo amount due</p>
+        <p class="mt-1 text-4xl font-extrabold tracking-tight">{{peso invoice.amount invoice.currency}}</p>
+        <p class="mt-2 font-mono text-[11px] text-white/75">Invoice {{invoice.reference}}</p>
+      </div>
+    </div>
+
+    <div class="p-6 sm:p-8">
+      <div class="flex items-center justify-between gap-3 border-b border-slate-100 pb-4">
+        <div>
+          <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Account holder</p>
+          <p class="mt-1 text-sm font-bold text-navy-900">{{student.name}}</p>
+          <p class="text-[11px] text-slate-400">{{student.email}}</p>
+        </div>
+        <div class="text-right">
+          <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Payment mode</p>
+          <p class="mt-1 rounded-full bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-700">DEMO only</p>
+        </div>
+      </div>
+
+      <div class="mt-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+        <div class="flex items-center justify-between gap-3 text-xs">
+          <span class="text-slate-500">{{invoice.description}}</span>
+          <span class="font-semibold text-navy-900">{{peso invoice.amount invoice.currency}}</span>
+        </div>
+        <div class="mt-2 flex items-center justify-between gap-3 text-xs">
+          <span class="text-slate-500">Simulation fee</span>
+          <span class="font-semibold text-emerald-700">PHP 0.00</span>
+        </div>
+        <div class="mt-3 flex items-center justify-between gap-3 border-t border-slate-200 pt-3">
+          <span class="text-sm font-bold text-navy-900">Total to simulate</span>
+          <span class="text-base font-extrabold text-navy-900">{{peso invoice.amount invoice.currency}}</span>
+        </div>
+      </div>
+
+      <div class="mt-4 rounded-xl border border-slate-200 p-3" style="background: {{method.accentSoft}};">
+        <div class="flex items-start gap-2.5">
+          <svg class="mt-0.5 h-4 w-4 shrink-0" style="color: {{method.accent}};" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+          <p class="text-[11px] leading-relaxed text-slate-600"><span class="font-semibold text-navy-900">Secure simulation.</span> The server reads the amount from invoice <span class="font-mono">{{invoice.reference}}</span>. This screen never asks for a PIN, OTP, password, or real account number.</p>
+        </div>
+      </div>
+
+      <form action="/billing/invoices/{{invoice.reference}}/pay/{{method.slug}}" method="POST" class="mt-5" data-confirm-message="Simulate a DEMO payment of {{peso invoice.amount invoice.currency}}? No real money will move." data-demo-payment-form>
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-bold text-white shadow-lg transition disabled:cursor-wait disabled:opacity-70" style="background: {{method.accent}}; box-shadow: 0 18px 36px -20px {{method.accent}};" data-submit-button>
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+          <span data-submit-label>Simulate payment</span>
+        </button>
+      </form>
+
+      <form action="/billing/invoices/{{invoice.reference}}/cancel" method="POST" class="mt-2.5" data-confirm="Cancel this demo payment? The invoice will be marked cancelled and no money will move.">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <input type="hidden" name="method" value="{{method.slug}}" />
+        <button type="submit" class="w-full rounded-xl border border-slate-300 bg-white px-5 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-navy-900">Cancel payment</button>
+      </form>
+
+      <form action="/billing/invoices/{{invoice.reference}}/fail" method="POST" class="mt-2.5" data-confirm="Simulate a FAILED demo payment? No money will move; this only tests the failure screen.">
+        <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+        <input type="hidden" name="method" value="{{method.slug}}" />
+        <button type="submit" class="w-full rounded-lg px-3 py-2 text-[11px] font-semibold text-slate-400 transition hover:bg-rose-50 hover:text-rose-700">Simulate a failed payment (demo test)</button>
+      </form>
+
+      <p class="mt-4 text-center text-[10px] leading-relaxed text-slate-400">This is not a GCash, Maya, or MariBank transaction. No official receipt is issued and no course access is granted.</p>
+    </div>
+  </section>
+
+  <aside class="space-y-4">
+    <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <h2 class="text-sm font-bold text-navy-900">Payment summary</h2>
+      <dl class="mt-4 space-y-3 text-xs">
+        <div class="flex items-start justify-between gap-3">
+          <dt class="text-slate-400">Invoice</dt>
+          <dd class="text-right font-mono text-[11px] font-semibold text-navy-900">{{invoice.reference}}</dd>
+        </div>
+        <div class="flex items-start justify-between gap-3">
+          <dt class="text-slate-400">Course</dt>
+          <dd class="max-w-[190px] text-right font-semibold text-navy-900">{{invoice.course.title}}</dd>
+        </div>
+        <div class="flex items-start justify-between gap-3">
+          <dt class="text-slate-400">Student</dt>
+          <dd class="text-right font-semibold text-navy-900">{{student.name}}</dd>
+        </div>
+        <div class="flex items-start justify-between gap-3">
+          <dt class="text-slate-400">Method</dt>
+          <dd class="text-right font-semibold text-navy-900">{{method.name}}</dd>
+        </div>
+        <div class="flex items-start justify-between gap-3">
+          <dt class="text-slate-400">Status</dt>
+          <dd><span class="rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700">Awaiting simulation</span></dd>
+        </div>
+        <div class="flex items-start justify-between gap-3 border-t border-slate-100 pt-3">
+          <dt class="font-semibold text-slate-600">Amount</dt>
+          <dd class="text-base font-extrabold text-navy-900">{{peso invoice.amount invoice.currency}}</dd>
+        </div>
+      </dl>
+    </div>
+
+    <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+      <div class="flex items-center gap-2 text-amber-900">
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+        <h2 class="text-xs font-bold uppercase tracking-wide">What this demo does</h2>
+      </div>
+      <ul class="mt-3 space-y-2 text-[11px] leading-relaxed text-amber-900">
+        <li class="flex gap-2"><span class="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-600"></span>Records one demo transaction in the LMS.</li>
+        <li class="flex gap-2"><span class="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-600"></span>Keeps the real invoice unpaid and the course locked.</li>
+        <li class="flex gap-2"><span class="mt-1.5 h-1 w-1 shrink-0 rounded-full bg-amber-600"></span>Adds nothing to Finance &amp; Billing revenue.</li>
+      </ul>
+    </div>
+
+    <a href="/billing/invoices/{{invoice.reference}}" class="flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-xs font-semibold text-navy-900 transition hover:bg-slate-50">
+      <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+      Choose a different method
+    </a>
+  </aside>
+</div>
+
+<script>
+  (function () {
+    const form = document.querySelector("[data-demo-payment-form]");
+    if (!form) return;
+    form.addEventListener("submit", function (event) {
+      if (form.dataset.confirmed !== "yes") {
+        if (!window.confirm(form.dataset.confirmMessage || "Simulate this demo payment?")) {
+          event.preventDefault();
+          return;
+        }
+        form.dataset.confirmed = "yes";
+      }
+      const button = form.querySelector("[data-submit-button]");
+      const label = form.querySelector("[data-submit-label]");
+      if (button) {
+        button.disabled = true;
+        button.setAttribute("aria-busy", "true");
+      }
+      if (label) label.textContent = "Simulating payment…";
+    });
+  })();
+</script>
+
+{{> app_end}}

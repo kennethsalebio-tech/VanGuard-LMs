@@ -1,0 +1,108 @@
+{{> app_start}}
+
+<div class="mx-auto max-w-4xl">
+  <div class="mb-4 text-xs text-slate-400">
+    <a href="/courses/{{lesson.courseId}}" class="hover:text-brand-600">{{lesson.course.title}}</a>
+    <span class="mx-1">/</span>
+    <a href="/learn/{{lesson.id}}" class="hover:text-brand-600">{{lesson.title}}</a>
+    <span class="mx-1">/</span>
+    <span class="text-slate-600">Result</span>
+  </div>
+
+  <section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
+    <div class="grid gap-0 sm:grid-cols-[220px_1fr]">
+      <div class="flex flex-col items-center justify-center p-7 {{#if passed}}bg-emerald-600{{else}}bg-rose-600{{/if}} text-white">
+        <div class="flex h-28 w-28 items-center justify-center rounded-full border-8 border-white/20">
+          <div class="text-center">
+            <p class="text-3xl font-extrabold">{{percent}}%</p>
+            <p class="text-[10px] font-bold uppercase tracking-wide text-white/70">Score</p>
+          </div>
+        </div>
+        <p class="mt-4 text-lg font-bold">{{#if passed}}Passed{{else}}Not passed{{/if}}</p>
+        <p class="text-xs text-white/70">{{score}} of {{total}} correct</p>
+      </div>
+      <div class="p-6 sm:p-8">
+        <p class="text-xs font-bold uppercase tracking-[0.16em] text-slate-400">Knowledge check result</p>
+        <h1 class="mt-2 text-2xl font-bold tracking-tight text-navy-900">{{lesson.title}}</h1>
+        <p class="mt-1 text-sm text-slate-500">Attempt {{attempt.attemptNumber}} · submitted {{formatDateTime attempt.submittedAt}}</p>
+
+        <div class="mt-5 rounded-xl p-4 {{#if passed}}bg-emerald-50 text-emerald-800{{else}}bg-rose-50 text-rose-800{{/if}}">
+          <p class="text-sm font-semibold">
+            {{#if passed}}
+              You passed. {{#if nextLesson}}The next lesson, “{{nextLesson.title}}”, is now unlocked.{{else}}You have completed the final lesson in this course.{{/if}}
+            {{else}}
+              You needed {{attempt.assessment.passScore}} of {{total}} correct to pass. Review the lesson and try again.
+            {{/if}}
+          </p>
+          <p class="mt-1 text-xs opacity-80">Attempts used: {{attemptsUsed}}{{#if maxAttempts}} of {{maxAttempts}}{{/if}}</p>
+        </div>
+
+        <div class="mt-5 flex flex-wrap gap-2">
+          {{#if passed}}
+            {{#if nextLesson}}
+              <a href="/learn/{{nextLesson.id}}" class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+                Continue to next lesson
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+              </a>
+            {{else}}
+              <a href="/courses/{{lesson.courseId}}" class="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700">Back to course</a>
+              <a href="/certificates" class="inline-flex items-center rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">View certificates</a>
+            {{/if}}
+          {{else}}
+            <a href="/learn/{{lesson.id}}" class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Review the lesson</a>
+            {{#if canRetake}}
+              <a href="/learn/{{lesson.id}}/quiz" class="inline-flex items-center gap-2 rounded-xl bg-brand-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Try again</a>
+            {{/if}}
+          {{/if}}
+          <a href="/assessments" class="inline-flex items-center rounded-xl border border-slate-300 px-5 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">All assessments</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {{#if showExplanations}}
+    <section class="mt-6">
+      <div class="mb-3 flex items-center justify-between">
+        <h2 class="text-lg font-bold text-navy-900">Answer review</h2>
+        <span class="text-xs text-slate-400">{{review.length}} questions</span>
+      </div>
+      <div class="space-y-3">
+        {{#each review}}
+          <div class="overflow-hidden rounded-2xl border bg-white shadow-sm {{#if isCorrect}}border-emerald-200{{else}}border-rose-200{{/if}}">
+            <div class="flex items-start gap-3 border-b border-slate-100 px-5 py-4">
+              <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-white {{#if isCorrect}}bg-emerald-600{{else}}bg-rose-600{{/if}}">
+                {{#if isCorrect}}
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                {{else}}
+                  <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                {{/if}}
+              </span>
+              <div class="min-w-0">
+                <p class="text-sm font-semibold leading-relaxed text-navy-900">{{prompt}}</p>
+                {{#if sourceRef}}<p class="mt-1 text-[10px] text-slate-400">Source: {{sourceRef}}</p>{{/if}}
+              </div>
+            </div>
+            <div class="space-y-2 px-5 py-4">
+              {{#each options}}
+                <div class="flex items-start gap-3 rounded-xl border px-4 py-2.5 text-sm {{#if isCorrect}}border-emerald-300 bg-emerald-50{{else if isSelected}}border-rose-300 bg-rose-50{{else}}border-slate-200 bg-white{{/if}}">
+                  <span class="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold {{#if isCorrect}}bg-emerald-600 text-white{{else if isSelected}}bg-rose-600 text-white{{else}}bg-slate-100 text-slate-600{{/if}}">{{letter}}</span>
+                  <span class="flex-1 text-slate-700">{{text}}</span>
+                  {{#if isCorrect}}<span class="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Correct</span>{{/if}}
+                  {{#if isSelected}}{{#unless isCorrect}}<span class="text-[10px] font-bold uppercase tracking-wide text-rose-700">Your answer</span>{{/unless}}{{/if}}
+                </div>
+              {{/each}}
+              {{#if explanation}}
+                <div class="mt-2 rounded-xl bg-slate-50 px-4 py-3">
+                  <p class="text-[10px] font-bold uppercase tracking-wide text-slate-400">Why</p>
+                  <p class="mt-1 text-xs leading-relaxed text-slate-600">{{explanation}}</p>
+                </div>
+              {{/if}}
+            </div>
+          </div>
+        {{/each}}
+      </div>
+    </section>
+  {{/if}}
+</div>
+
+{{> app_end}}

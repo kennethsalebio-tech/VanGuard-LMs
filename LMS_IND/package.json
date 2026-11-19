@@ -1,0 +1,45 @@
+{
+  "name": "LMS_IND",
+  "version": "1.0.0",
+  "description": "XianFire Framework project",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "xian": "./bin/xian.js"
+  },
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "xian": "nodemon index.js",
+    "migrate": "node migrate.js",
+    "seed": "node migrate.js",
+    "create:model": "node create.js model",
+    "create:controller": "node create.js controller",
+    "create:add-middleware": "node create.js middleware",
+    "create:upload-middleware": "node create.js upload-middleware",
+    "route:list": "node list-routes.js",
+    "test:integration": "node tests/integration.mjs",
+    "route:cache": "node route-cache.js"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "connect-flash": "^0.1.1",
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2",
+    "express-session": "^1.17.3",
+    "hbs": "^4.2.0",
+    "inquirer": "^9.2.15",
+    "jszip": "^3.10.2",
+    "mammoth": "^1.13.0",
+    "multer": "^2.0.2",
+    "mysql2": "^3.9.2",
+    "nodemailer": "^6.10.1",
+    "pdf-parse": "^2.4.5",
+    "sequelize": "^6.37.3",
+    "sqlite3": "^5.1.7",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

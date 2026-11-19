@@ -1,0 +1,47 @@
+    </main>
+
+    <footer class="app-footer border-t border-slate-200 bg-white px-6 py-5">
+      <div class="mx-auto flex w-full max-w-[1440px] flex-col items-center justify-between gap-2 text-[11px] text-slate-400 sm:flex-row">
+        <p>© {{formatDate "2026-01-01"}} Vanguard Learning · Integrated Learning Management System</p>
+        <div class="flex items-center gap-4">
+          <a href="/courses" class="transition hover:text-brand-600">Catalog</a>
+          <a href="/verify" class="transition hover:text-brand-600">Verify certificate</a>
+          <a href="/profile" class="transition hover:text-brand-600">Account</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    function toggleSidebar(show) {
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("sidebar-overlay");
+      if (!sidebar) return;
+      sidebar.classList.toggle("-translate-x-full", !show);
+      sidebar.classList.toggle("translate-x-0", show);
+      if (overlay) overlay.classList.toggle("hidden", !show);
+      document.body.classList.toggle("overflow-hidden", show);
+    }
+
+    document.querySelectorAll("form[data-confirm]").forEach((form) => {
+      form.addEventListener("submit", (event) => {
+        if (!window.confirm(form.dataset.confirm)) event.preventDefault();
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") toggleSidebar(false);
+    });
+
+    const sidebar = document.getElementById("sidebar");
+    if (sidebar) {
+      sidebar.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+          if (window.innerWidth < 1024) toggleSidebar(false);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

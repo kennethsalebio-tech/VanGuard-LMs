@@ -1,0 +1,82 @@
+{{> app_start}}
+
+<nav class="mb-5 flex items-center gap-2 text-xs text-slate-400" aria-label="Breadcrumb">
+  <a href="/billing" class="font-semibold hover:text-brand-600">Billing</a>
+  <span>/</span>
+  <span class="text-slate-600">Choose a demo method</span>
+</nav>
+
+<div class="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+  <div>
+    <div class="flex flex-wrap items-center gap-2">
+      <span class="rounded-full border border-amber-300 bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.12em] text-amber-800">DEMO / SIMULATION</span>
+      <span class="font-mono text-[11px] text-slate-400">{{invoice.reference}}</span>
+    </div>
+    <h1 class="mt-2 text-2xl font-bold tracking-tight text-navy-900 sm:text-3xl">Choose how to simulate payment</h1>
+    <p class="mt-1 max-w-2xl text-sm text-slate-500">All three options use the same secure demo processor. No real wallet, bank account, credential, or OTP is involved.</p>
+  </div>
+  <div class="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-right shadow-sm">
+    <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Demo amount</p>
+    <p class="mt-1 text-2xl font-extrabold text-navy-900">{{peso invoice.amount invoice.currency}}</p>
+  </div>
+</div>
+
+<div class="mb-6 grid gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-3">
+  <div>
+    <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Invoice</p>
+    <p class="mt-1 font-mono text-xs font-semibold text-navy-900">{{invoice.reference}}</p>
+  </div>
+  <div>
+    <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Course</p>
+    <p class="mt-1 text-xs font-semibold text-navy-900">{{invoice.course.title}}</p>
+  </div>
+  <div>
+    <p class="text-[10px] font-bold uppercase tracking-[0.12em] text-slate-400">Student</p>
+    <p class="mt-1 text-xs font-semibold text-navy-900">{{currentUser.name}}</p>
+  </div>
+</div>
+
+<div class="grid gap-4 lg:grid-cols-3">
+  {{#each demoMethods}}
+    <article class="group flex flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:shadow-float" style="border-top: 4px solid {{accent}};">
+      <div class="flex items-start justify-between gap-3">
+        <span class="flex h-12 w-12 items-center justify-center rounded-2xl" style="background: {{accentSoft}}; color: {{accent}};">
+          {{#if (eq icon "wallet")}}
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10h18M5 6h14a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2zm3 8h4" /></svg>
+          {{else if (eq icon "spark")}}
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+          {{else}}
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 10l9-7 9 7M5 10v10h14V10M9 20v-6h6v6" /></svg>
+          {{/if}}
+        </span>
+        <span class="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-amber-700">Demo</span>
+      </div>
+      <h2 class="mt-4 text-base font-bold text-navy-900">{{name}}</h2>
+      <p class="mt-0.5 text-[10px] font-bold uppercase tracking-[0.12em]" style="color: {{accent}};">{{kicker}}</p>
+      <p class="mt-2 flex-1 text-xs leading-relaxed text-slate-500">{{description}}</p>
+
+      <dl class="mt-4 space-y-2 border-t border-slate-100 pt-4 text-xs">
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-slate-400">Invoice</dt>
+          <dd class="font-mono text-[10px] font-semibold text-navy-900">{{../invoice.reference}}</dd>
+        </div>
+        <div class="flex items-center justify-between gap-3">
+          <dt class="text-slate-400">Amount due</dt>
+          <dd class="font-bold text-navy-900">{{peso ../invoice.amount ../invoice.currency}}</dd>
+        </div>
+      </dl>
+
+      <a href="/billing/invoices/{{../invoice.reference}}/pay/{{slug}}" class="mt-4 flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition" style="background: {{accent}};" onmouseover="this.style.background='{{accentDark}}'" onmouseout="this.style.background='{{accent}}'">
+        Continue to payment
+        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+      </a>
+    </article>
+  {{/each}}
+</div>
+
+<div class="mt-6 flex flex-col items-start justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm sm:flex-row sm:items-center">
+  <p class="text-xs leading-relaxed text-slate-500">These interfaces are inspired by common mobile-wallet and digital-banking patterns. They are not affiliated with, endorsed by, or copies of GCash, Maya, or MariBank.</p>
+  <a href="/billing" class="rounded-xl border border-slate-300 px-4 py-2.5 text-xs font-semibold text-navy-900 transition hover:bg-slate-50">Cancel and return</a>
+</div>
+
+{{> app_end}}

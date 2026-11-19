@@ -1,0 +1,222 @@
+{{> app_start}}
+
+<div class="mb-4 flex items-center gap-2 text-xs text-slate-400">
+  <a href="/courses" class="hover:text-brand-600">Catalog</a>
+  <span>/</span>
+  <span class="truncate text-slate-600">{{course.title}}</span>
+</div>
+
+<section class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-card">
+  <div class="relative p-6 sm:p-8" style="background: linear-gradient(135deg, {{course.accent}} 0%, #0b1f3a 100%);">
+    <div class="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-white/10 blur-2xl"></div>
+    <div class="relative max-w-3xl">
+      <div class="flex flex-wrap items-center gap-2">
+        <span class="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">{{course.level}}</span>
+        {{#if course.category}}<span class="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">{{course.category.name}}</span>{{/if}}
+        <span class="rounded-full bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-white">{{course.durationHours}} hours</span>
+        {{#if paymentBadge}}
+          <span class="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide {{#if (eq paymentBadge.tone "paid")}}bg-emerald-300 text-emerald-950{{else if (eq paymentBadge.tone "pending")}}bg-amber-300 text-amber-950{{else if (eq paymentBadge.tone "failed")}}bg-rose-300 text-rose-950{{else if (eq paymentBadge.tone "cancelled")}}bg-slate-200 text-slate-700{{else}}bg-sky-300 text-sky-950{{/if}}">{{paymentBadge.label}}</span>
+        {{else if isPaid}}
+          <span class="rounded-full bg-amber-300 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-900">Paid course · {{peso course.price course.currency}}</span>
+        {{else}}
+          <span class="rounded-full bg-emerald-300 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-emerald-900">Free</span>
+        {{/if}}
+        {{#if isPreview}}<span class="rounded-full bg-amber-300 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-900">Instructor preview</span>{{/if}}
+      </div>
+      <h1 class="mt-4 text-2xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">{{course.title}}</h1>
+      <p class="mt-3 max-w-2xl text-sm leading-relaxed text-white/75">{{course.description}}</p>
+      <div class="mt-6 flex flex-wrap items-center gap-4 text-xs text-white/80">
+        <span class="inline-flex items-center gap-2">
+          <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 text-[10px] font-bold">{{initials course.instructor.name}}</span>
+          {{course.instructor.name}}
+        </span>
+        <span class="inline-flex items-center gap-1.5">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+          {{course.questionCount}} questions per check · pass {{course.passScore}}/{{course.questionCount}}
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid gap-8 p-6 sm:p-8 lg:grid-cols-3">
+    <div class="lg:col-span-2">
+      <h2 class="text-sm font-bold uppercase tracking-[0.12em] text-slate-400">What you will learn</h2>
+      <div class="mt-3 whitespace-pre-line text-sm leading-relaxed text-slate-600">{{course.objectives}}</div>
+
+      <div id="curriculum" class="mt-8">
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-bold text-navy-900">Curriculum</h2>
+          <span class="text-xs text-slate-400">{{modules.length}} modules</span>
+        </div>
+
+        {{#if modules}}
+          <div class="mt-4 space-y-4">
+            {{#each modules}}
+              <div class="overflow-hidden rounded-xl border border-slate-200">
+                <div class="flex items-center justify-between gap-3 bg-slate-50 px-4 py-3">
+                  <div class="flex items-center gap-3">
+                    <span class="flex h-7 w-7 items-center justify-center rounded-lg bg-navy-900 text-[11px] font-bold text-white">{{add @index 1}}</span>
+                    <div>
+                      <p class="text-sm font-semibold text-navy-900">{{title}}</p>
+                      {{#if description}}<p class="mt-0.5 text-[11px] text-slate-500">{{description}}</p>{{/if}}
+                    </div>
+                  </div>
+                  <span class="shrink-0 text-[11px] font-semibold text-slate-400">{{lessons.length}} lessons</span>
+                </div>
+                <div class="divide-y divide-slate-100">
+                  {{#each lessons}}
+                    <div class="flex items-center gap-3 px-4 py-3">
+                      {{#if (eq progress.status "completed")}}
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
+                          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" /></svg>
+                        </span>
+                      {{else if (eq progress.status "locked")}}
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+                          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        </span>
+                      {{else}}
+                        <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-50 text-brand-600">
+                          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /></svg>
+                        </span>
+                      {{/if}}
+
+                      <div class="min-w-0 flex-1">
+                        <p class="truncate text-sm font-medium {{#if (eq progress.status "locked")}}text-slate-400{{else}}text-navy-900{{/if}}">{{title}}</p>
+                        <p class="mt-0.5 flex items-center gap-2 text-[11px] text-slate-400">
+                          <span>{{durationMinutes}} min</span>
+                          <span>·</span>
+                          <span>{{approvedQuestions}} approved questions</span>
+                          {{#if (eq progress.status "completed")}}<span>·</span><span class="font-semibold text-emerald-600">Best {{progress.bestScore}}/{{progress.totalQuestions}}</span>{{/if}}
+                        </p>
+                      </div>
+
+                      {{#if (eq progress.status "locked")}}
+                        <span class="rounded-lg bg-slate-100 px-3 py-1.5 text-[11px] font-semibold text-slate-400">Locked</span>
+                      {{else}}
+                        {{#if isPreview}}
+                          <a href="/learn/{{id}}" class="rounded-lg border border-slate-300 px-3 py-1.5 text-[11px] font-semibold text-navy-900 transition hover:bg-slate-50">Preview</a>
+                        {{else}}
+                          <a href="/learn/{{id}}" class="rounded-lg bg-brand-600 px-3 py-1.5 text-[11px] font-semibold text-white transition hover:bg-brand-700">
+                            {{#if (eq progress.status "completed")}}Review{{else if (eq progress.status "in_progress")}}Resume{{else}}Start{{/if}}
+                          </a>
+                        {{/if}}
+                      {{/if}}
+                    </div>
+                  {{/each}}
+                </div>
+              </div>
+            {{/each}}
+          </div>
+        {{else}}
+          <p class="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-4 py-8 text-center text-sm text-slate-500">No modules have been added to this course yet.</p>
+        {{/if}}
+      </div>
+    </div>
+
+    <aside class="space-y-4">
+      <div class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+        {{#if isPreview}}
+          <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Instructor preview</p>
+          <p class="mt-2 text-sm text-slate-600">You can open every lesson without enrollment. Learner progress and knowledge checks are not recorded.</p>
+          <a href="/instructor/courses/{{course.id}}/builder" class="mt-4 flex items-center justify-center rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Open builder</a>
+        {{else if enrollment}}
+          <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Your progress</p>
+          <p class="mt-2 text-3xl font-extrabold text-navy-900">{{#if progress}}{{progress.percent}}{{else}}0{{/if}}%</p>
+          <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-200">
+            <div class="h-full rounded-full bg-brand-500" style="width: {{#if progress}}{{progress.percent}}{{else}}0{{/if}}%"></div>
+          </div>
+          <p class="mt-2 text-xs text-slate-500">
+            {{#if progress}}{{progress.completedLessons}} of {{progress.totalLessons}} lessons completed{{else}}Progress initializes on your first lesson{{/if}}
+          </p>
+          <a href="#curriculum" class="mt-4 flex items-center justify-center rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Continue learning</a>
+        {{else if isPaid}}
+          <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Paid course</p>
+          <p class="mt-2 text-3xl font-extrabold text-navy-900">{{peso course.price course.currency}}</p>
+          <p class="mt-1 text-xs text-slate-500">One-time payment · permanent access to this course</p>
+
+          {{#if purchase}}
+            {{#if (eq purchase.status "pending")}}
+              <div class="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3 text-xs text-amber-900">
+                <p class="font-semibold">Payment pending</p>
+                <p class="mt-1">Your checkout is not confirmed yet. Course access unlocks automatically once the billing service verifies the payment.</p>
+              </div>
+              <a href="/courses/{{course.id}}/purchase/{{purchase.reference}}" class="mt-3 flex items-center justify-center rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Check payment status</a>
+              <form action="/courses/{{course.id}}/purchase" method="POST" class="mt-2">
+                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                <button type="submit" class="flex w-full items-center justify-center rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-white">Return to payment page</button>
+              </form>
+            {{else if (eq purchase.status "paid")}}
+              <div class="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-3 text-xs text-emerald-900">
+                <p class="font-semibold">Payment verified</p>
+                <p class="mt-1">Your purchase is confirmed. If the course still looks locked, reload this page.</p>
+              </div>
+            {{else if (eq purchase.status "refunded")}}
+              <div class="mt-4 rounded-xl border border-sky-200 bg-sky-50 px-3 py-3 text-xs text-sky-900">
+                <p class="font-semibold">Purchase refunded</p>
+                <p class="mt-1">This purchase was refunded. Contact the administrator if you need access reinstated.</p>
+              </div>
+            {{else}}
+              <div class="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-3 text-xs text-rose-900">
+                <p class="font-semibold">Payment not completed</p>
+                <p class="mt-1">This checkout was {{purchase.status}}. No access was granted.</p>
+              </div>
+              <form action="/courses/{{course.id}}/purchase" method="POST" class="mt-3">
+                <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">Try payment again</button>
+              </form>
+            {{/if}}
+          {{else}}
+            <form action="/courses/{{course.id}}/purchase" method="POST" class="mt-4">
+              <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+              <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+                Purchase course
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+              </button>
+            </form>
+          {{/if}}
+
+          <p class="mt-3 text-[11px] leading-relaxed text-slate-400">Access is granted only after the payment provider confirms your payment. Clicking purchase never unlocks the course on its own.</p>
+        {{else}}
+          <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Enrollment</p>
+          <p class="mt-2 text-sm leading-relaxed text-slate-600">Enroll to unlock the first lesson. Each lesson requires a passing knowledge check before the next one opens.</p>
+          <form action="/courses/{{course.id}}/enroll" method="POST" class="mt-4">
+            <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+            <button type="submit" class="flex w-full items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+              Enroll in this course
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            </button>
+          </form>
+        {{/if}}
+      </div>
+
+      {{#if assignment}}
+        <div class="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+          <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-700">Assigned training</p>
+          <p class="mt-2 text-sm font-semibold text-amber-900">Due {{formatDate assignment.dueDate}}</p>
+          <p class="mt-1 text-xs text-amber-700">This course was assigned automatically by HR. Complete it before the due date.</p>
+        </div>
+      {{/if}}
+
+      {{#if certificate}}
+        <div class="rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+          <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-700">Certificate earned</p>
+          <p class="mt-2 text-sm font-semibold text-emerald-900">{{certificate.certificateId}}</p>
+          <p class="mt-1 text-xs text-emerald-700">Issued {{formatDate certificate.issuedAt}}</p>
+          <a href="/certificates/{{certificate.id}}" class="mt-3 inline-flex text-xs font-bold text-emerald-800 underline underline-offset-4">View certificate</a>
+        </div>
+      {{/if}}
+
+      <div class="rounded-2xl border border-slate-200 bg-white p-5">
+        <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-slate-400">Assessment policy</p>
+        <ul class="mt-3 space-y-2 text-xs text-slate-500">
+          <li class="flex items-start gap-2"><span class="mt-1 h-1 w-1 shrink-0 rounded-full bg-slate-400"></span>{{course.questionCount}} questions selected randomly from an approved bank.</li>
+          <li class="flex items-start gap-2"><span class="mt-1 h-1 w-1 shrink-0 rounded-full bg-slate-400"></span>Pass mark: {{course.passScore}} correct answers.</li>
+          <li class="flex items-start gap-2"><span class="mt-1 h-1 w-1 shrink-0 rounded-full bg-slate-400"></span>{{#if course.allowRetakes}}Retakes allowed{{else}}Retakes disabled{{/if}}{{#if course.maxAttempts}} · max {{course.maxAttempts}} attempts{{/if}}.</li>
+          <li class="flex items-start gap-2"><span class="mt-1 h-1 w-1 shrink-0 rounded-full bg-slate-400"></span>Question and option order change on every attempt.</li>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</section>
+
+{{> app_end}}
