@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import { Op } from "sequelize";
 import {
   Course,
   Module,
@@ -22,15 +23,21 @@ export function shuffle(items) {
 }
 
 export async function getOrderedLessons(courseId, { includeDrafts = false } = {}) {
+  const moduleWhere = { courseId };
+  if (!includeDrafts) moduleWhere.status = "published";
   const modules = await Module.findAll({
-    where: { courseId },
+    where: moduleWhere,
     order: [
       ["orderIndex", "ASC"],
       ["id", "ASC"],
     ],
   });
   const where = { courseId };
-  if (!includeDrafts) where.status = "published";
+  if (!includeDrafts) {
+    where.status = "published";
+    // A lesson is only learner-visible when its module is published too.
+    where.moduleId = { [Op.in]: modules.map((mod) => mod.id) };
+  }
   const lessons = await Lesson.findAll({
     where,
     order: [

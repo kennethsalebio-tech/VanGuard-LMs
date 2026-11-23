@@ -383,11 +383,16 @@ export async function simulatePayment({ user, invoiceReference, methodSlug, subm
   } catch (error) {
     // A race between two submissions loses on the unique invoiceId index.
     if (error?.name === "SequelizeUniqueConstraintError") {
-      const existing = await SimulatedTransaction.findOne({
-        where: { userId: user.id },
-        include: transactionIncludes,
-        order: [["createdAt", "DESC"]],
+      const invoice = await SimulatedInvoice.findOne({
+        where: { reference: String(invoiceReference || ""), userId: user.id },
+        attributes: ["id"],
       });
+      const existing = invoice
+        ? await SimulatedTransaction.findOne({
+            where: { invoiceId: invoice.id },
+            include: transactionIncludes,
+          })
+        : null;
       if (existing) {
         return { duplicate: true, transaction: serializeTransaction(existing), invoice: null };
       }

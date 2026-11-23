@@ -29,6 +29,7 @@ import {
   sanitizeLessonHtml,
 } from "../services/documentConverter.js";
 import { buildDocumentPreview } from "../services/documentPreview.js";
+import { splitDocumentIntoHeadings } from "../services/documentLessons.js";
 import {
   UploadError,
   cleanupPendingUploads,
@@ -46,6 +47,7 @@ import {
   stripHtml,
 } from "../services/questionGenerator.js";
 import { getOrderedLessons, notify } from "../services/progressService.js";
+import { topicBadge } from "../services/topicBadge.js";
 import { canManageCourse, logActivity } from "../middleware/auth.js";
 import { uploadDir } from "../middleware/upload.js";
 
@@ -577,6 +579,7 @@ export async function builderPage(req, res) {
 
   const moduleList = modules.map((mod) => ({
     ...mod.toJSON(),
+    badge: topicBadge(mod.title, mod.id),
     lessons: lessons
       .filter((lesson) => lesson.moduleId === mod.id)
       .map((lesson) => {
@@ -755,8 +758,49 @@ export async function createModule(req, res) {
     title,
     description: String(req.body.description || "").trim(),
     orderIndex: count,
+    status: "draft",
   });
-  req.flash("success_msg", "Module added.");
+  req.flash("success_msg", "Module added. Publish it when its lessons are ready for learners.");
+  res.redirect(`/instructor/courses/${course.id}/builder`);
+}
+
+export async function publishModule(req, res) {
+  const course = await loadOwnedCourse(req, res);
+  if (!course) return;
+  const mod = await Module.findOne({
+    where: { id: req.params.moduleId, courseId: course.id },
+  });
+  if (!mod) {
+    req.flash("error_msg", "Module not found.");
+    return res.redirect(`/instructor/courses/${course.id}/builder`);
+  }
+  await mod.update({ status: "published" });
+  await logActivity(req, "Published module", {
+    entityType: "module",
+    entityId: mod.id,
+    detail: mod.title,
+  });
+  req.flash("success_msg", `“${mod.title}” is published. Enrolled learners can now see its published lessons.`);
+  res.redirect(`/instructor/courses/${course.id}/builder`);
+}
+
+export async function unpublishModule(req, res) {
+  const course = await loadOwnedCourse(req, res);
+  if (!course) return;
+  const mod = await Module.findOne({
+    where: { id: req.params.moduleId, courseId: course.id },
+  });
+  if (!mod) {
+    req.flash("error_msg", "Module not found.");
+    return res.redirect(`/instructor/courses/${course.id}/builder`);
+  }
+  await mod.update({ status: "draft" });
+  await logActivity(req, "Unpublished module", {
+    entityType: "module",
+    entityId: mod.id,
+    detail: mod.title,
+  });
+  req.flash("success_msg", `“${mod.title}” is now a draft and hidden from learners.`);
   res.redirect(`/instructor/courses/${course.id}/builder`);
 }
 
@@ -781,6 +825,156 @@ export async function deleteModule(req, res) {
 }
 
 /* ------------------------------------------------------------------ lessons */
+
+function normalizedLessonTitle(value = "") {
+  return String(value).replace(/\s+/g, " ").trim().toLowerCase();
+}
+
+async function saveGeneratedLessons({
+  course,
+  targetModule,
+  source,
+  sections,
+  requestedSummary,
+  durationMinutes,
+  conversionNotes,
+  transaction,
+}) {
+  const existingLessons = await Lesson.findAll({
+    where: {
+      courseId: course.id,
+      moduleId: targetModule.id,
+      sourceName: source.originalName,
+    },
+    order: [
+      ["orderIndex", "ASC"],
+      ["id", "ASC"],
+    ],
+    transaction,
+  });
+
+  // Keep a queue per title so identical headings in one document remain
+  // separate while a repeated upload updates those lessons instead of cloning.
+  const existingByTitle = new Map();
+  for (const lesson of existingLessons) {
+    const key = normalizedLessonTitle(lesson.title);
+    if (!existingByTitle.has(key)) existingByTitle.set(key, []);
+    existingByTitle.get(key).push(lesson);
+  }
+
+  let nextOrderIndex = await Lesson.count({
+    where: { moduleId: targetModule.id },
+    transaction,
+  });
+  const saved = [];
+  let created = 0;
+  let updated = 0;
+
+  for (const section of sections) {
+    const key = normalizedLessonTitle(section.title);
+    const queue = existingByTitle.get(key) || [];
+    let lesson = queue.shift() || null;
+
+    if (lesson) {
+      await lesson.update(
+        {
+          title: section.title.slice(0, 160),
+          sourceFile: source.path,
+          sourceMime: source.mimeType,
+          sourceName: source.originalName,
+        },
+        { transaction }
+      );
+      updated += 1;
+    } else {
+      lesson = await Lesson.create(
+        {
+          courseId: course.id,
+          moduleId: targetModule.id,
+          title: section.title.slice(0, 160),
+          summary:
+            sections.length === 1
+              ? String(requestedSummary || "").trim().slice(0, 400)
+              : "",
+          orderIndex: nextOrderIndex,
+          durationMinutes: Number(durationMinutes) || 15,
+          status: "draft",
+          sourceFile: source.path,
+          sourceMime: source.mimeType,
+          sourceName: source.originalName,
+        },
+        { transaction }
+      );
+      nextOrderIndex += 1;
+      created += 1;
+    }
+
+    const contentValues = {
+      html: section.html,
+      plainText: section.plainText,
+      sections: JSON.stringify([]),
+      conversionNotes: conversionNotes.join(" ").slice(0, 1000),
+    };
+    const lessonContent = await LessonContent.findOne({
+      where: { lessonId: lesson.id },
+      transaction,
+    });
+    if (lessonContent) {
+      await lessonContent.update(contentValues, { transaction });
+    } else {
+      await LessonContent.create(
+        { lessonId: lesson.id, ...contentValues },
+        { transaction }
+      );
+    }
+
+    // Every generated lesson points at the source document with the same
+    // stable resource row; re-uploading refreshes that row rather than adding
+    // another copy to the lesson.
+    const resourceValues = {
+      title: source.originalName,
+      fileName: source.originalName,
+      filePath: source.path,
+      mimeType: source.mimeType,
+      sizeBytes: source.size,
+      isDownloadable: true,
+    };
+    const existingResource = await LearningResource.findOne({
+      where: { lessonId: lesson.id },
+      order: [["id", "ASC"]],
+      transaction,
+    });
+    if (existingResource) {
+      await existingResource.update(resourceValues, { transaction });
+    } else {
+      await LearningResource.create(
+        { lessonId: lesson.id, ...resourceValues },
+        { transaction }
+      );
+    }
+
+    const bank = await QuestionBank.findOne({
+      where: { lessonId: lesson.id },
+      transaction,
+    });
+    if (!bank) {
+      await QuestionBank.create(
+        {
+          lessonId: lesson.id,
+          courseId: course.id,
+          title: `${lesson.title} — Question Bank`,
+          status: "draft",
+          generator: process.env.LLM_API_KEY ? "ai_llm" : "ai_local",
+        },
+        { transaction }
+      );
+    }
+
+    saved.push(lesson);
+  }
+
+  return { saved, created, updated };
+}
 
 export async function createLesson(req, res) {
   const course = await loadOwnedCourse(req, res);
@@ -865,6 +1059,57 @@ export async function createLesson(req, res) {
         "Upload a module or paste lesson content. The lesson needs readable content."
       );
       return res.redirect(`/instructor/courses/${course.id}/builder`);
+    }
+
+    // DOCX heading styles are the only source of automatic lesson splits.
+    // PDF/PPTX/text imports keep the existing single-lesson conversion path.
+    const generatedSections =
+      source && !imageSource && extensionOf(source.originalName) === ".docx"
+        ? splitDocumentIntoHeadings(contentHtml, { fallbackTitle: title })
+        : [];
+
+    if (generatedSections.length) {
+      const generated = await sequelize.transaction((transaction) =>
+        saveGeneratedLessons({
+          course,
+          targetModule: mod,
+          source,
+          sections: generatedSections,
+          requestedSummary: req.body.summary,
+          durationMinutes: req.body.durationMinutes,
+          conversionNotes,
+          transaction,
+        })
+      );
+
+      await logActivity(req, "Generated lessons from document headings", {
+        entityType: "module",
+        entityId: mod.id,
+        detail: `${generated.created} created, ${generated.updated} updated from ${source.originalName}`,
+      });
+
+      const changes = [];
+      if (generated.created) {
+        changes.push(
+          `${generated.created} draft lesson${generated.created === 1 ? "" : "s"} created`
+        );
+      }
+      if (generated.updated) {
+        changes.push(
+          `${generated.updated} existing lesson${generated.updated === 1 ? "" : "s"} updated`
+        );
+      }
+      req.flash(
+        "success_msg",
+        `${changes.join("; ")} from the document headings. Review ${
+          generatedSections.length === 1 ? "the lesson" : "the lessons"
+        } before publishing.`
+      );
+
+      if (generatedSections.length > 1) {
+        return res.redirect(`/instructor/courses/${course.id}/builder`);
+      }
+      return res.redirect(`/instructor/lessons/${generated.saved[0].id}/edit`);
     }
 
     const count = await Lesson.count({ where: { moduleId: mod.id } });
@@ -982,13 +1227,19 @@ export async function lessonEditPage(req, res) {
     include: [{ model: QuestionOption, as: "options" }],
     order: [["orderIndex", "ASC"]],
   });
+  const approved = questions.filter((q) => q.status === "approved").length;
+  const requiredQuestions = lesson.course.questionCount;
 
   res.render("instructor/lesson-edit", {
     title: `Edit lesson — ${lesson.title}`,
     lesson,
-    approved: questions.filter((q) => q.status === "approved").length,
+    moduleBadge: lesson.module ? topicBadge(lesson.module.title, lesson.module.id) : null,
+    approved,
+    approvedPercent: requiredQuestions
+      ? Math.min(100, Math.round((approved / requiredQuestions) * 100))
+      : 0,
     pending: questions.filter((q) => q.status === "pending").length,
-    requiredQuestions: lesson.course.questionCount,
+    requiredQuestions,
   });
 }
 
@@ -1035,6 +1286,15 @@ export async function updateLesson(req, res) {
     durationMinutes: Number(req.body.durationMinutes) || lesson.durationMinutes,
     status: wantsPublish ? "published" : "draft",
   });
+
+  // A published lesson must live inside a published module. Otherwise the
+  // learner query (which only reads published modules) silently hides it.
+  if (wantsPublish) {
+    await Module.update(
+      { status: "published" },
+      { where: { id: lesson.moduleId, courseId: lesson.courseId } }
+    );
+  }
 
   if (lesson.content) {
     await lesson.content.update({
@@ -1094,24 +1354,14 @@ export async function deleteLesson(req, res) {
     return res.redirect(`/instructor/lessons/${lesson.id}/edit`);
   }
   const courseId = lesson.courseId;
-  await AttemptQuestion.destroy({
-    where: {
-      questionId: {
-        [Op.in]: (
-          await Question.findAll({ where: { lessonId: lesson.id }, attributes: ["id"] })
-        ).map((q) => q.id),
-      },
-    },
-  });
-  await QuestionOption.destroy({
-    where: {
-      questionId: {
-        [Op.in]: (
-          await Question.findAll({ where: { lessonId: lesson.id }, attributes: ["id"] })
-        ).map((q) => q.id),
-      },
-    },
-  });
+  const questionIds = (
+    await Question.findAll({ where: { lessonId: lesson.id }, attributes: ["id"] })
+  ).map((question) => question.id);
+  await AttemptQuestion.destroy({ where: { questionId: { [Op.in]: questionIds } } });
+  // Review history has no database-level cascade in existing installs, so it
+  // must be removed explicitly or a deleted lesson leaves orphaned reviews.
+  await QuestionReview.destroy({ where: { questionId: { [Op.in]: questionIds } } });
+  await QuestionOption.destroy({ where: { questionId: { [Op.in]: questionIds } } });
   await Question.destroy({ where: { lessonId: lesson.id } });
   await QuestionBank.destroy({ where: { lessonId: lesson.id } });
   await LessonProgress.destroy({ where: { lessonId: lesson.id } });
@@ -1348,6 +1598,17 @@ export async function deleteQuestion(req, res) {
     req.flash("error_msg", "You cannot delete questions for this course.");
     return res.redirect("/instructor/courses");
   }
+  // AttemptQuestion references the question with a NO ACTION foreign key. Deleting
+  // a question already used in an attempt would crash the request and lose the
+  // audit trail, so keep it and direct the instructor to revoke it instead.
+  const usedInAttempts = await AttemptQuestion.count({ where: { questionId: question.id } });
+  if (usedInAttempts > 0) {
+    req.flash(
+      "error_msg",
+      "This question has already appeared in a learner attempt and cannot be deleted. Revoke it from the bank to remove it from future assessments."
+    );
+    return res.redirect(`/instructor/lessons/${question.lessonId}/questions`);
+  }
   const lessonId = question.lessonId;
   const bankId = question.bankId;
   await QuestionOption.destroy({ where: { questionId: question.id } });
@@ -1527,16 +1788,19 @@ export async function updateQuestion(req, res) {
   }
 
   const options = question.options.slice().sort((a, b) => a.orderIndex - b.orderIndex);
-  let hasCorrect = false;
-  for (const option of options) {
-    const text = String(req.body[`option_${option.id}`] ?? option.text).trim();
-    const isCorrect = option.id === correctId;
-    if (isCorrect) hasCorrect = true;
-    await option.update({ text, isCorrect });
-  }
-  if (!hasCorrect) {
+  const optionUpdates = options.map((option) => ({
+    option,
+    text: String(req.body[`option_${option.id}`] ?? option.text).trim(),
+    isCorrect: option.id === correctId,
+  }));
+  if (!optionUpdates.some((item) => item.isCorrect)) {
+    // Validate before writing so a rejected submission cannot clear the
+    // existing correct answer and leave the question ungradeable.
     req.flash("error_msg", "Select the correct answer.");
     return res.redirect(`/instructor/questions/${question.id}/edit`);
+  }
+  for (const item of optionUpdates) {
+    await item.option.update({ text: item.text, isCorrect: item.isCorrect });
   }
 
   await question.update({

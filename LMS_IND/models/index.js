@@ -200,6 +200,14 @@ async function applySafeSchemaUpdates() {
     defaultValue: "password",
   });
 
+  // The separate HR role was retired. Existing HR accounts become
+  // administrators so their people/compliance access is preserved.
+  const legacyHrUsers = await User.count({ where: { role: "hr" } });
+  if (legacyHrUsers > 0) {
+    await User.update({ role: "superadmin" }, { where: { role: "hr" } });
+    console.log(`✅ Migrated ${legacyHrUsers} HR account(s) to administrator`);
+  }
+
   // Enforce one account per Google subject. The column is nullable, so SQLite
   // and MySQL both allow any number of password-only users.
   try {
@@ -224,6 +232,14 @@ async function applySafeSchemaUpdates() {
     type: DataTypes.STRING,
     allowNull: false,
     defaultValue: "PHP",
+  });
+
+  // Module publishing for databases created before modules had a status.
+  // Existing modules stay visible to learners; new modules start as drafts.
+  await ensureColumn("Modules", "status", {
+    type: DataTypes.STRING(16),
+    allowNull: false,
+    defaultValue: "published",
   });
 
   await ensureColumn("QuestionBanks", "reviewStatus", {

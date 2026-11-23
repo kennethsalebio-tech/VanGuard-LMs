@@ -29,7 +29,7 @@ function roleAllowsPath(user, path) {
     return user.role === "instructor" || user.role === "superadmin";
   }
   if (path.startsWith("/admin")) {
-    return user.role === "superadmin" || user.role === "hr";
+    return user.role === "superadmin";
   }
   return true;
 }
@@ -95,7 +95,7 @@ async function resolveCertificate(user, storedLink) {
   if (!match) return "/certificates";
   const certificate = await Certificate.findByPk(Number(match[1]));
   if (!certificate) return "/certificates";
-  if (certificate.userId !== user.id && !["superadmin", "hr"].includes(user.role)) {
+  if (certificate.userId !== user.id && user.role !== "superadmin") {
     return "/certificates";
   }
   return `/certificates/${certificate.id}`;

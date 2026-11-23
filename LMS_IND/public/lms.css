@@ -107,6 +107,37 @@ body {
   margin: 1rem 0;
 }
 
+/* Code detected inside uploaded Word documents. Inline styles are also
+ * written by services/codeFormatter.js so stored and previewed lessons match. */
+.lesson-body .lesson-code,
+.dv-rich-paper .lesson-code {
+  font-family: "Courier New", Courier, monospace;
+  background: #f1f3f5;
+  color: #1f2937;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0.9rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid #94a3b8;
+  border-radius: 0.5rem;
+  white-space: pre;
+  overflow-x: auto;
+  tab-size: 4;
+}
+
+.lesson-body .lesson-code code,
+.dv-rich-paper .lesson-code code {
+  display: block;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  white-space: pre;
+}
+
 /* ---------------------------------------------------------------- inputs */
 
 .field {

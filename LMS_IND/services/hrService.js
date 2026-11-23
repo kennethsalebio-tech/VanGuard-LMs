@@ -18,7 +18,7 @@ const DEPARTMENT_CATEGORIES = {
  * onboarding rules. Idempotent: existing enrollments are not duplicated.
  */
 export async function autoAssignTraining(user, actorId = null) {
-  if (!user || !["learner", "hr", "instructor"].includes(user.role)) return [];
+  if (!user || !["learner", "instructor"].includes(user.role)) return [];
 
   const [position, department] = await Promise.all([
     user.positionId ? Position.findByPk(user.positionId) : null,

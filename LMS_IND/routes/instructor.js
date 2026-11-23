@@ -15,6 +15,8 @@ import {
   resourcePreviewPage,
   resourceFile,
   createModule,
+  publishModule,
+  unpublishModule,
   deleteModule,
   createLesson,
   lessonEditPage,
@@ -97,6 +99,8 @@ router.delete("/courses/:id/uploads/:token", ah(removeModuleUpload));
 router.get("/resources/:resourceId/preview", ah(resourcePreviewPage));
 router.get("/resources/:resourceId/file", ah(resourceFile));
 router.post("/courses/:id/modules", ah(createModule));
+router.post("/courses/:id/modules/:moduleId/publish", ah(publishModule));
+router.post("/courses/:id/modules/:moduleId/unpublish", ah(unpublishModule));
 router.post("/courses/:id/modules/:moduleId/delete", ah(deleteModule));
 router.post(
   "/courses/:id/lessons",

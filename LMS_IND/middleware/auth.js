@@ -80,7 +80,6 @@ export async function logActivity(req, action, { entityType, entityId, detail } 
 export function landingFor(user) {
   if (!user) return "/login";
   if (user.role === "superadmin") return "/admin";
-  if (user.role === "hr") return "/admin/hr";
   if (user.role === "instructor") return "/instructor";
   return "/dashboard";
 }

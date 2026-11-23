@@ -7,11 +7,6 @@ import {
   toggleUser,
   resetUserPassword,
   coursesPage,
-  hrPage,
-  createEmployee,
-  updateEmployee,
-  createDepartment,
-  createPosition,
   reportsPage,
   exportReport,
   logsPage,
@@ -32,7 +27,6 @@ import { requireRole } from "../middleware/auth.js";
 import { ah } from "../middleware/asyncHandler.js";
 
 const router = express.Router();
-const staff = requireRole("superadmin", "hr");
 const adminOnly = requireRole("superadmin");
 
 router.get("/", adminOnly, ah(dashboardPage));
@@ -43,7 +37,7 @@ router.post("/users/:id/role", adminOnly, ah(updateUserRole));
 router.post("/users/:id/toggle", adminOnly, ah(toggleUser));
 router.post("/users/:id/reset-password", adminOnly, ah(resetUserPassword));
 
-router.get("/courses", staff, ah(coursesPage));
+router.get("/courses", adminOnly, ah(coursesPage));
 router.post("/courses/:id/price", adminOnly, ah(updateCoursePrice));
 
 /* Finance & Billing — data served by the VanguardLMS billing API. */
@@ -60,14 +54,8 @@ router.get(
 router.get("/finance/receipts/:reference", adminOnly, ah(financeReceiptPage));
 router.post("/finance/refunds/:reference", adminOnly, ah(financeRefundAction));
 
-router.get("/hr", staff, ah(hrPage));
-router.post("/employees", staff, ah(createEmployee));
-router.post("/employees/:id", staff, ah(updateEmployee));
-router.post("/departments", staff, ah(createDepartment));
-router.post("/positions", staff, ah(createPosition));
-
-router.get("/reports", staff, ah(reportsPage));
-router.get("/reports/export/:type", staff, ah(exportReport));
+router.get("/reports", adminOnly, ah(reportsPage));
+router.get("/reports/export/:type", adminOnly, ah(exportReport));
 
 router.get("/logs", adminOnly, ah(logsPage));
 

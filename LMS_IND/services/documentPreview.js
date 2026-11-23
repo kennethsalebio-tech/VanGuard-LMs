@@ -3,6 +3,7 @@ import mammoth from "mammoth";
 import JSZip from "jszip";
 import * as XLSX from "xlsx";
 import { sanitizeLessonHtml } from "./documentConverter.js";
+import { formatCodeInHtml } from "./codeFormatter.js";
 
 const SLIDE_CANVAS_WIDTH = 960;
 
@@ -56,7 +57,7 @@ async function previewDocx(buffer, warnings) {
   }
   return {
     kind: "html",
-    html: sanitizeLessonHtml(result.value || ""),
+    html: sanitizeLessonHtml(formatCodeInHtml(result.value || "")),
   };
 }
 

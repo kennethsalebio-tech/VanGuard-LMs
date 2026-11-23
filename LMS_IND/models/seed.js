@@ -551,7 +551,6 @@ export async function seedDatabase() {
   // Validate bootstrap credentials before creating any dependent rows, so a
   // misconfigured production start cannot leave a half-seeded database.
   const adminPassword = bootstrapPassword("BOOTSTRAP_ADMIN_PASSWORD", "Admin@123");
-  const hrPassword = bootstrapPassword("BOOTSTRAP_HR_PASSWORD", "Hr@123");
   const instructorPassword = bootstrapPassword(
     "BOOTSTRAP_INSTRUCTOR_PASSWORD",
     "Teach@123"
@@ -573,11 +572,11 @@ export async function seedDatabase() {
     description: "Service operations and customer delivery",
   });
 
-  await Position.create({
+  const itSupport = await Position.create({
     title: "IT Support Specialist",
     departmentId: it.id,
   });
-  await Position.create({
+  const dev = await Position.create({
     title: "Software Engineer",
     departmentId: it.id,
   });
@@ -616,16 +615,6 @@ export async function seedDatabase() {
     email: process.env.BOOTSTRAP_ADMIN_EMAIL || "admin@lms.test",
     password: adminPassword,
     role: "superadmin",
-  });
-  const hrUser = await createUser({
-    name: "Liza Mercado",
-    email: process.env.BOOTSTRAP_HR_EMAIL || "hr@lms.test",
-    password: hrPassword,
-    role: "hr",
-    departmentId: hr.id,
-    positionId: hrOfficer.id,
-    employeeId: "EMP-1000",
-    dateHired: "2024-06-03",
   });
   const instructor = await createUser({
     name: "Engr. Maria Santos",
@@ -669,6 +658,7 @@ export async function seedDatabase() {
         title: moduleDefinition.title,
         description: moduleDefinition.description,
         orderIndex: m,
+        status: "published",
       });
       for (let l = 0; l < moduleDefinition.lessons.length; l += 1) {
         const lessonDefinition = moduleDefinition.lessons[l];

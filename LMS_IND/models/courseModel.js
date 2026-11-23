@@ -39,6 +39,10 @@ export const Module = sequelize.define("Module", {
   title: { type: DataTypes.STRING, allowNull: false },
   description: { type: DataTypes.TEXT },
   orderIndex: { type: DataTypes.INTEGER, defaultValue: 0 },
+  status: {
+    type: DataTypes.ENUM("draft", "published"),
+    defaultValue: "draft",
+  },
 });
 
 export const Lesson = sequelize.define("Lesson", {

@@ -280,7 +280,7 @@ export async function usersPage(req, res) {
       { employeeId: { [Op.like]: `%${search}%` } },
     ];
   }
-  if (["learner", "instructor", "hr", "superadmin"].includes(role)) where.role = role;
+  if (["learner", "instructor", "superadmin"].includes(role)) where.role = role;
 
   const [users, departments, positions] = await Promise.all([
     User.findAll({
@@ -308,7 +308,7 @@ export async function usersPage(req, res) {
 export async function createUser(req, res) {
   const name = String(req.body.name || "").trim();
   const email = String(req.body.email || "").trim().toLowerCase();
-  const role = ["learner", "instructor", "hr", "superadmin"].includes(req.body.role)
+  const role = ["learner", "instructor", "superadmin"].includes(req.body.role)
     ? req.body.role
     : "learner";
   const password = String(req.body.password || "");
@@ -363,7 +363,7 @@ export async function createUser(req, res) {
 export async function updateUserRole(req, res) {
   const user = await User.findByPk(req.params.id);
   const role = req.body.role;
-  if (!user || !["learner", "instructor", "hr", "superadmin"].includes(role)) {
+  if (!user || !["learner", "instructor", "superadmin"].includes(role)) {
     req.flash("error_msg", "Invalid user or role.");
     return res.redirect("/admin/users");
   }
@@ -486,165 +486,6 @@ export async function coursesPage(req, res) {
     };
   });
   res.render("admin/courses", { title: "Course management", courses: rows });
-}
-
-/* --------------------------------------------------------------------- HR */
-
-export async function hrPage(req, res) {
-  const [{ rows, stats, departments: departmentPerformance }, departments, positions, courses] =
-    await Promise.all([
-      complianceData(),
-      Department.findAll({
-        include: [
-          { model: Position, as: "positions" },
-          { model: User, as: "members", attributes: ["id"] },
-        ],
-        order: [["name", "ASC"]],
-      }),
-      Position.findAll({
-        include: [{ model: Department, as: "department" }],
-        order: [["title", "ASC"]],
-      }),
-      Course.findAll({
-        where: { status: "published" },
-        attributes: ["id", "title"],
-        order: [["title", "ASC"]],
-      }),
-    ]);
-
-  res.render("admin/hr", {
-    title: "HRMS & training compliance",
-    rows,
-    stats,
-    departmentPerformance,
-    departments,
-    positions,
-    courses,
-  });
-}
-
-export async function createEmployee(req, res) {
-  const name = String(req.body.name || "").trim();
-  const email = String(req.body.email || "").trim().toLowerCase();
-  const employeeId = String(req.body.employeeId || "").trim();
-  const password = String(req.body.password || "") || "Welcome@123";
-
-  if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    req.flash("error_msg", "Enter a valid employee name and email.");
-    return res.redirect("/admin/hr");
-  }
-  if (!employeeId) {
-    req.flash("error_msg", "Employee ID is required.");
-    return res.redirect("/admin/hr");
-  }
-  if (await User.findOne({ where: { [Op.or]: [{ email }, { employeeId }] } })) {
-    req.flash("error_msg", "That email address or employee ID already exists.");
-    return res.redirect("/admin/hr");
-  }
-
-  const employee = await User.create({
-    name,
-    email,
-    employeeId,
-    role: "learner",
-    password: await bcrypt.hash(password, 10),
-    departmentId: req.body.departmentId ? Number(req.body.departmentId) : null,
-    positionId: req.body.positionId ? Number(req.body.positionId) : null,
-    employmentStatus: ["active", "probation", "on_leave", "inactive"].includes(
-      req.body.employmentStatus
-    )
-      ? req.body.employmentStatus
-      : "active",
-    dateHired: req.body.dateHired || null,
-  });
-
-  const assigned = await autoAssignTraining(employee, req.user.id);
-  await logActivity(req, "Created employee profile", {
-    entityType: "user",
-    entityId: employee.id,
-    detail: `${employee.name} (${employee.employeeId})`,
-  });
-  req.flash(
-    "success_msg",
-    `${employee.name} added. ${assigned.length} required course(s) assigned automatically. Temporary password: ${password}`
-  );
-  res.redirect("/admin/hr");
-}
-
-export async function updateEmployee(req, res) {
-  const employee = await User.findByPk(req.params.id);
-  if (!employee) {
-    req.flash("error_msg", "Employee not found.");
-    return res.redirect("/admin/hr");
-  }
-  const previousDepartment = employee.departmentId;
-  const previousPosition = employee.positionId;
-  await employee.update({
-    departmentId: req.body.departmentId ? Number(req.body.departmentId) : null,
-    positionId: req.body.positionId ? Number(req.body.positionId) : null,
-    employmentStatus: ["active", "probation", "on_leave", "inactive"].includes(
-      req.body.employmentStatus
-    )
-      ? req.body.employmentStatus
-      : employee.employmentStatus,
-    dateHired: req.body.dateHired || employee.dateHired,
-    isActive: req.body.isActive === "on",
-  });
-
-  let assigned = [];
-  if (
-    previousDepartment !== employee.departmentId ||
-    previousPosition !== employee.positionId
-  ) {
-    assigned = await autoAssignTraining(employee, req.user.id);
-  }
-
-  await logActivity(req, "Updated employee profile", {
-    entityType: "user",
-    entityId: employee.id,
-    detail: employee.name,
-  });
-  req.flash(
-    "success_msg",
-    `Employee updated.${assigned.length ? ` ${assigned.length} new course(s) auto-assigned.` : ""}`
-  );
-  res.redirect("/admin/hr");
-}
-
-export async function createDepartment(req, res) {
-  const name = String(req.body.name || "").trim();
-  if (name.length < 2) {
-    req.flash("error_msg", "Enter a department name.");
-    return res.redirect("/admin/hr");
-  }
-  await Department.findOrCreate({
-    where: { name },
-    defaults: {
-      code: String(req.body.code || name.slice(0, 4)).toUpperCase().slice(0, 10),
-      description: String(req.body.description || "").trim(),
-    },
-  });
-  req.flash("success_msg", "Department saved.");
-  res.redirect("/admin/hr");
-}
-
-export async function createPosition(req, res) {
-  const title = String(req.body.title || "").trim();
-  if (title.length < 2) {
-    req.flash("error_msg", "Enter a position title.");
-    return res.redirect("/admin/hr");
-  }
-  const requiredCourseIds = []
-    .concat(req.body.requiredCourseIds || [])
-    .map(Number)
-    .filter(Boolean);
-  await Position.create({
-    title,
-    departmentId: req.body.departmentId ? Number(req.body.departmentId) : null,
-    requiredCourseIds: JSON.stringify(requiredCourseIds),
-  });
-  req.flash("success_msg", "Position created with training requirements.");
-  res.redirect("/admin/hr");
 }
 
 /* ----------------------------------------------------------------- reports */

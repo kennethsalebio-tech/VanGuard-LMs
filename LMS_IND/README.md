@@ -32,13 +32,12 @@ server is required for local development. Both apps load `.env` automatically.
 | Role | Email | Development password |
 | --- | --- | --- |
 | Super administrator | `admin@lms.test` | `Admin@123` |
-| HR administrator | `hr@lms.test` | `Hr@123` |
 | Instructor | `instructor@lms.test` | `Teach@123` |
 
 These existing staff accounts are preserved. Change their passwords after the
 first production sign-in. On a fresh production database, set
-`BOOTSTRAP_ADMIN_PASSWORD`, `BOOTSTRAP_HR_PASSWORD`, and
-`BOOTSTRAP_INSTRUCTOR_PASSWORD` before the first `npm run migrate`; the seed
+`BOOTSTRAP_ADMIN_PASSWORD` and `BOOTSTRAP_INSTRUCTOR_PASSWORD` before the
+first `npm run migrate`; the seed
 refuses to run in production without them. Learners create their own accounts
 at `/register` or sign in with Google.
 
@@ -85,9 +84,8 @@ results: [`docs/FINANCE_INTEGRATION.md`](docs/FINANCE_INTEGRATION.md).
 ## Roles
 
 - **Super administrator** — platform dashboard, user/role management, course
-  overview, HRMS, reports and CSV exports, audit logs. Can manage any course.
-- **HR administrator** — employee records, departments, positions, required
-  training rules, compliance reporting and CSV exports.
+  overview, user and course management, reports and CSV exports, audit logs. Can
+  manage any course.
 - **Instructor** — create and manage own courses, modules, lesson conversion,
   question banks, publishing, and learner monitoring. Cannot manage courses
   owned by another instructor.
@@ -218,8 +216,8 @@ browser-required ICE list is sent to the room page; no other secret is exposed.
    `HITPAY_WEBHOOK_SALT` (not the API-key salt). Set `PAYMENT_PROVIDER=hitpay`
    and the production `HITPAY_API_KEY` / `HITPAY_API_URL`.
 7. Configure SMTP (`MAIL_*`) so password reset links can be delivered.
-8. After the first sign-in, change the three staff passwords from User
-   Management. Keep the supervisor, HR, and instructor accounts password-only.
+8. After the first sign-in, change the two staff passwords from User
+   Management. Keep the administrator and instructor accounts password-only.
 
 The integration suite can be run against the deployed services with
 `LMS_URL`/`BILLING_URL` and the same secrets in the environment. Its disposable
@@ -241,7 +239,7 @@ Production startup validates every required secret and refuses localhost URLs.
 | `BILLING_API_URL`, `BILLING_API_KEY`, `BILLING_API_SECRET` | — | Server-to-server billing credentials (must match VanguardLMS) |
 | `LMS_WEBHOOK_SECRET` | — | Verifies signed payment notifications from the billing service |
 | `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM_ADDRESS` | — | SMTP delivery for password reset links |
-| `BOOTSTRAP_ADMIN_PASSWORD`, `BOOTSTRAP_HR_PASSWORD`, `BOOTSTRAP_INSTRUCTOR_PASSWORD` | dev fallbacks | Required only when seeding a fresh production database |
+| `BOOTSTRAP_ADMIN_PASSWORD`, `BOOTSTRAP_INSTRUCTOR_PASSWORD` | dev fallbacks | Required only when seeding a fresh production database |
 | `WEBRTC_ICE_SERVERS` | Google STUN | ICE server JSON or comma-separated STUN URLs |
 | `TURN_URL` / `TURN_USERNAME` / `TURN_CREDENTIAL` | — | TURN relay for restrictive networks |
 | `DB_DIALECT` | `sqlite` | `sqlite` or `mysql` |
@@ -319,7 +317,7 @@ routes/                      auth, learner, instructor, admin routers
 controllers/                 auth, learner, instructor, admin
 models/                      Sequelize models, associations, seed data
 services/                    document conversion, question generation,
-                             progress/unlocking/certificates, HR assignment,
+                             progress/unlocking/certificates, training assignment,
                              scoring, notification routing, live classroom
 middleware/                  auth/RBAC, CSRF/security, upload, async wrapper
 routes/live.js               Live Classroom meeting room and room APIs

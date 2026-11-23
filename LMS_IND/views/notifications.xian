@@ -52,7 +52,7 @@
                 {{/if}}
                 {{#unless isRead}}
                   <form action="/notifications/{{id}}/read" method="POST">
-                    <input type="hidden" name="_csrf" value="{{csrfToken}}" />
+                    <input type="hidden" name="_csrf" value="{{@root.csrfToken}}" />
                     <button type="submit" class="text-xs font-medium text-slate-400 hover:text-slate-600">Mark as read</button>
                   </form>
                 {{/unless}}

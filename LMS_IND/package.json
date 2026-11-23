@@ -21,6 +21,12 @@
     "test:integration": "node tests/integration.mjs",
     "route:cache": "node route-cache.js"
   },
+  "nodemonConfig": {
+    "ignore": [
+      "uploads/**",
+      "data/**"
+    ]
+  },
   "dependencies": {
     "bcrypt": "^5.1.0",
     "connect-flash": "^0.1.1",

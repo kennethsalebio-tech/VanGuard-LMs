@@ -4,6 +4,7 @@ import JSZip from "jszip";
 import * as XLSX from "xlsx";
 import { PDFParse } from "pdf-parse";
 import { stripHtml } from "./questionGenerator.js";
+import { formatCodeInHtml } from "./codeFormatter.js";
 
 const SUPPORTED = [
   ".pdf",
@@ -133,9 +134,10 @@ async function extractDocx(buffer) {
     mammoth.convertToHtml({ buffer }),
     mammoth.extractRawText({ buffer }),
   ]);
+  const detectedHtml = formatCodeInHtml(htmlResult.value || "");
   return {
-    html: sanitizeLessonHtml(htmlResult.value || ""),
-    plainText: textResult.value || stripHtml(htmlResult.value || ""),
+    html: sanitizeLessonHtml(detectedHtml),
+    plainText: textResult.value || stripHtml(detectedHtml),
     notes: (htmlResult.messages || [])
       .map((m) => m.message)
       .filter(Boolean),

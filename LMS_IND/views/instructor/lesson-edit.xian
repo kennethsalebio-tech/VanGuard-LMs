@@ -12,7 +12,10 @@
   <div>
     <div class="flex flex-wrap items-center gap-2">
       <span class="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide {{#if (eq lesson.status "published")}}bg-emerald-50 text-emerald-700{{else}}bg-amber-50 text-amber-700{{/if}}">{{lesson.status}}</span>
-      <span class="rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500">{{lesson.module.title}}</span>
+      <span class="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wide text-slate-500">
+        {{#if moduleBadge}}<span class="inline-flex items-center rounded px-1.5 py-0.5 text-[9px] font-extrabold ring-1 {{moduleBadge.className}}">{{moduleBadge.label}}</span>{{/if}}
+        {{lesson.module.title}}
+      </span>
     </div>
     <h1 class="mt-2 text-2xl font-bold tracking-tight text-navy-900">Edit lesson</h1>
     <p class="mt-1 text-sm text-slate-500">{{lesson.durationMinutes}} min · {{lesson.resources.length}} resource(s)</p>
@@ -96,7 +99,7 @@
         </div>
       </div>
       <div class="mt-3 h-2 overflow-hidden rounded-full bg-slate-100">
-        <div class="h-full rounded-full {{#if (gte approved requiredQuestions)}}bg-emerald-500{{else}}bg-amber-500{{/if}}" style="width: {{#if (gte approved requiredQuestions)}}100{{else}}{{approved}}{{/if}}%"></div>
+        <div class="h-full rounded-full {{#if (gte approved requiredQuestions)}}bg-emerald-500{{else}}bg-amber-500{{/if}}" style="width: {{approvedPercent}}%"></div>
       </div>
       {{#if (gte approved requiredQuestions)}}
         <p class="mt-3 rounded-xl bg-emerald-50 p-3 text-[11px] text-emerald-700">Enough approved questions. This lesson can be published.</p>

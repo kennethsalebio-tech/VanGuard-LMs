@@ -24,7 +24,7 @@ export const User = sequelize.define("User", {
   authProvider: { type: DataTypes.STRING(32), allowNull: false, defaultValue: "password" },
   password: { type: DataTypes.STRING, allowNull: false },
   role: {
-    type: DataTypes.ENUM("superadmin", "hr", "instructor", "learner"),
+    type: DataTypes.ENUM("superadmin", "instructor", "learner"),
     allowNull: false,
     defaultValue: "learner",
   },
@@ -45,7 +45,7 @@ export const TrainingAssignment = sequelize.define("TrainingAssignment", {
   courseId: { type: DataTypes.INTEGER, allowNull: false },
   assignedBy: { type: DataTypes.INTEGER },
   dueDate: { type: DataTypes.DATEONLY },
-  source: { type: DataTypes.STRING, defaultValue: "hr" },
+  source: { type: DataTypes.STRING, defaultValue: "admin" },
   status: {
     type: DataTypes.ENUM("assigned", "completed", "overdue"),
     defaultValue: "assigned",

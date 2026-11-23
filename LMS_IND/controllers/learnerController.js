@@ -38,6 +38,7 @@ import {
 import { canManageCourse, logActivity } from "../middleware/auth.js";
 import { formatPercent, percentOf } from "../services/scoring.js";
 import { resolveNotificationDestination } from "../services/notificationService.js";
+import { topicBadge } from "../services/topicBadge.js";
 import {
   courseIsPaid,
   findPaidPurchase,
@@ -76,7 +77,6 @@ export async function dashboardPage(req, res) {
   if (req.user.role !== "learner") {
     const map = {
       superadmin: "/admin",
-      hr: "/admin/hr",
       instructor: "/instructor",
     };
     return res.redirect(map[req.user.role] || "/dashboard");
@@ -99,7 +99,10 @@ export async function dashboardPage(req, res) {
             as: "lesson",
             required: true,
             where: { status: "published" },
-            include: [{ model: Course, as: "course", include: courseInclude }],
+            include: [
+              { model: Module, as: "module", required: true, where: { status: "published" } },
+              { model: Course, as: "course", include: courseInclude },
+            ],
           },
         ],
         order: [["updatedAt", "DESC"]],
@@ -252,10 +255,13 @@ export async function courseDetailPage(req, res) {
     order: [["createdAt", "DESC"]],
   });
   const purchase = selectPaymentPurchase(purchases);
+  const isPreview = canManageCourse(req.user, course);
   const lessons = await getOrderedLessons(course.id);
+  const moduleWhere = { courseId: course.id };
+  if (!isPreview) moduleWhere.status = "published";
   const [modules, progressRows, approvedQuestions, certificate, assignment] =
     await Promise.all([
-      Module.findAll({ where: { courseId: course.id }, order: [["orderIndex", "ASC"]] }),
+      Module.findAll({ where: moduleWhere, order: [["orderIndex", "ASC"]] }),
       LessonProgress.findAll({ where: { courseId: course.id, userId: req.user.id } }),
       Question.findAll({
         where: { lessonId: { [Op.in]: lessons.map((lesson) => lesson.id) }, status: "approved" },
@@ -273,6 +279,7 @@ export async function courseDetailPage(req, res) {
 
   const moduleList = modules.map((mod) => ({
     ...mod.toJSON(),
+    badge: topicBadge(mod.title, mod.id),
     lessons: lessons
       .filter((lesson) => lesson.moduleId === mod.id)
       .map((lesson) => ({
@@ -294,7 +301,7 @@ export async function courseDetailPage(req, res) {
     progress: courseProgress,
     certificate,
     assignment,
-    isPreview: canManageCourse(req.user, course),
+    isPreview,
     purchase,
     paymentBadge: paymentBadgeFor(purchase),
     isPaid: courseIsPaid(course),
@@ -374,8 +381,15 @@ export async function learnPage(req, res) {
     req.flash("error_msg", "You need to enroll in this course to open the lesson.");
     return res.redirect(`/courses/${lesson.courseId}`);
   }
+  if (!preview && lesson.module?.status !== "published") {
+    req.flash("error_msg", "This lesson is not available yet.");
+    return res.redirect(`/courses/${lesson.courseId}`);
+  }
 
-  const progressMap = await ensureProgressRows(req.user.id, lesson.courseId);
+  // Instructor previews must not create or advance learner-style progress rows.
+  const progressMap = preview
+    ? new Map()
+    : await ensureProgressRows(req.user.id, lesson.courseId);
   const unlocked = preview || (await isLessonUnlocked(req.user.id, lesson));
   if (!unlocked) {
     req.flash("error_msg", "This lesson is locked. Pass the previous lesson's knowledge check to unlock it.");
@@ -387,9 +401,11 @@ export async function learnPage(req, res) {
     await currentProgress.update({ status: "in_progress" });
   }
 
+  const moduleWhere = { courseId: lesson.courseId };
+  if (!preview) moduleWhere.status = "published";
   const [lessons, modules, approvedCount, assessment] = await Promise.all([
     getOrderedLessons(lesson.courseId),
-    Module.findAll({ where: { courseId: lesson.courseId }, order: [["orderIndex", "ASC"]] }),
+    Module.findAll({ where: moduleWhere, order: [["orderIndex", "ASC"]] }),
     Question.count({ where: { lessonId: lesson.id, status: "approved" } }),
     Assessment.findOne({ where: { lessonId: lesson.id, type: "lesson_gate" } }),
   ]);
@@ -401,6 +417,7 @@ export async function learnPage(req, res) {
 
   const nav = modules.map((mod) => ({
     ...mod.toJSON(),
+    badge: topicBadge(mod.title, mod.id),
     lessons: lessons
       .filter((item) => item.moduleId === mod.id)
       .map((item) => ({
@@ -419,15 +436,20 @@ export async function learnPage(req, res) {
     }
   }
 
+  const requiredQuestions = assessment?.questionCount || lesson.course.questionCount || 5;
   res.render("learn", {
     title: lesson.title,
     lesson,
+    moduleBadge: lesson.module ? topicBadge(lesson.module.title, lesson.module.id) : null,
     modules: nav,
     prevLesson: index > 0 ? lessons[index - 1] : null,
     nextLesson: index >= 0 && index < lessons.length - 1 ? lessons[index + 1] : null,
     progress: freshProgress,
     approvedCount,
-    requiredQuestions: assessment?.questionCount || lesson.course.questionCount || 5,
+    approvedPercent: requiredQuestions
+      ? Math.min(100, Math.round((approvedCount / requiredQuestions) * 100))
+      : 0,
+    requiredQuestions,
     preview,
     isLastLesson: index === lessons.length - 1,
   });
@@ -481,7 +503,10 @@ async function renderQuiz(req, res, attempt) {
 
 export async function startQuiz(req, res) {
   const lesson = await Lesson.findByPk(req.params.lessonId, {
-    include: [{ model: Course, as: "course" }],
+    include: [
+      { model: Course, as: "course" },
+      { model: Module, as: "module" },
+    ],
   });
   if (!lesson) {
     return res.status(404).render("error", {
@@ -504,6 +529,10 @@ export async function startQuiz(req, res) {
       status: 403,
       message: "Enroll in the course before taking its knowledge checks.",
     });
+  }
+  if (lesson.status !== "published" || lesson.module?.status !== "published") {
+    req.flash("error_msg", "This lesson is not available yet.");
+    return res.redirect(`/courses/${lesson.courseId}`);
   }
   if (!(await isLessonUnlocked(req.user.id, lesson))) {
     return res.status(403).render("error", {
@@ -806,7 +835,12 @@ export async function assessmentsPage(req, res) {
       {
         model: Lesson,
         as: "lesson",
-        include: [{ model: Course, as: "course", include: courseInclude }],
+        required: true,
+        where: { status: "published" },
+        include: [
+          { model: Module, as: "module", required: true, where: { status: "published" } },
+          { model: Course, as: "course", include: courseInclude },
+        ],
       },
     ],
     order: [["startedAt", "DESC"]],
@@ -820,7 +854,10 @@ export async function assessmentsPage(req, res) {
         model: Lesson,
         as: "lesson",
         where: { status: "published" },
-        include: [{ model: Course, as: "course" }],
+        include: [
+          { model: Module, as: "module", required: true, where: { status: "published" } },
+          { model: Course, as: "course" },
+        ],
       },
     ],
     order: [["updatedAt", "DESC"]],
@@ -870,7 +907,7 @@ export async function certificatePage(req, res) {
       message: "We could not find that certificate.",
     });
   }
-  if (certificate.userId !== req.user.id && !["superadmin", "hr"].includes(req.user.role)) {
+  if (certificate.userId !== req.user.id && req.user.role !== "superadmin") {
     return res.status(403).render("error", {
       title: "Certificate not available",
       status: 403,
@@ -1007,7 +1044,10 @@ export async function downloadResource(req, res) {
       {
         model: Lesson,
         as: "lesson",
-        include: [{ model: Course, as: "course" }],
+        include: [
+          { model: Course, as: "course" },
+          { model: Module, as: "module" },
+        ],
       },
     ],
   });
@@ -1031,10 +1071,20 @@ export async function downloadResource(req, res) {
       message: "Enroll in the course to download its learning resources.",
     });
   }
+  if (
+    !staff &&
+    (lesson.status !== "published" || lesson.module?.status !== "published")
+  ) {
+    return res.status(404).render("error", {
+      title: "Resource unavailable",
+      status: 404,
+      message: "This learning resource is not available yet.",
+    });
+  }
 
   const uploadsRoot = path.resolve(process.cwd(), "uploads");
   const filePath = path.resolve(process.cwd(), resource.filePath);
-  if (!filePath.startsWith(uploadsRoot) || !fs.existsSync(filePath)) {
+  if (!filePath.startsWith(`${uploadsRoot}${path.sep}`) || !fs.existsSync(filePath)) {
     return res.status(404).render("error", {
       title: "File missing",
       status: 404,
@@ -1050,7 +1100,10 @@ export async function viewResourceFile(req, res) {
       {
         model: Lesson,
         as: "lesson",
-        include: [{ model: Course, as: "course" }],
+        include: [
+          { model: Course, as: "course" },
+          { model: Module, as: "module" },
+        ],
       },
     ],
   });
@@ -1072,6 +1125,16 @@ export async function viewResourceFile(req, res) {
       title: "Document not available",
       status: 403,
       message: "Enroll in the course to view its learning resources.",
+    });
+  }
+  if (
+    !staff &&
+    (lesson.status !== "published" || lesson.module?.status !== "published")
+  ) {
+    return res.status(404).render("error", {
+      title: "Document not available",
+      status: 404,
+      message: "This learning resource is not available yet.",
     });
   }
 

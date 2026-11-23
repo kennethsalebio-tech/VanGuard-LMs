@@ -374,9 +374,6 @@ export async function learnerLivePage(req, res) {
   if (req.user.role === "instructor" || req.user.role === "superadmin") {
     return res.redirect("/instructor/live");
   }
-  if (req.user.role === "hr") {
-    return res.redirect("/admin/hr");
-  }
 
   const enrollments = await CourseEnrollment.findAll({
     where: { userId: req.user.id },

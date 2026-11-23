@@ -5,6 +5,10 @@ import { pendingDir, uploadDir, MIME_BY_EXTENSION } from "../middleware/upload.j
 
 const TOKEN_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const PENDING_MAX_AGE_MS = 24 * 60 * 60 * 1000;
+// Runtime metadata must not use a .json suffix: the development watcher
+// restarts the app when it sees JSON files inside the project during uploads.
+const META_SUFFIX = ".meta";
+const LEGACY_META_SUFFIX = ".meta.json";
 
 export class UploadError extends Error {
   constructor(message, status = 400) {
@@ -103,7 +107,37 @@ export async function validateUploadedFile(filePath, originalName, suppliedMime 
 }
 
 function metaPath(token) {
-  return path.join(pendingDir, `${token}.meta.json`);
+  return path.join(pendingDir, `${token}${META_SUFFIX}`);
+}
+
+function legacyMetaPath(token) {
+  return path.join(pendingDir, `${token}${LEGACY_META_SUFFIX}`);
+}
+
+function metadataSuffix(entry) {
+  if (entry.endsWith(META_SUFFIX)) return META_SUFFIX;
+  if (entry.endsWith(LEGACY_META_SUFFIX)) return LEGACY_META_SUFFIX;
+  return null;
+}
+
+async function readMetadata(token) {
+  try {
+    return JSON.parse(await fs.readFile(metaPath(token), "utf8"));
+  } catch (error) {
+    if (error.code !== "ENOENT") throw error;
+  }
+
+  const legacyPath = legacyMetaPath(token);
+  const metadata = JSON.parse(await fs.readFile(legacyPath, "utf8"));
+  await fs.rename(legacyPath, metaPath(token)).catch(() => {});
+  return metadata;
+}
+
+async function removeMetadata(token) {
+  await Promise.all([
+    fs.unlink(metaPath(token)).catch(() => {}),
+    fs.unlink(legacyMetaPath(token)).catch(() => {}),
+  ]);
 }
 
 function safePendingPath(token, storedName) {
@@ -146,7 +180,7 @@ export async function getPendingUpload(token, { userId, courseId }) {
   }
   let metadata;
   try {
-    metadata = JSON.parse(await fs.readFile(metaPath(token), "utf8"));
+    metadata = await readMetadata(token);
   } catch {
     throw new UploadError("This upload is no longer available. Please upload the file again.", 404);
   }
@@ -166,7 +200,7 @@ export async function removePendingUpload(token, { userId, courseId }) {
   const upload = await getPendingUpload(token, { userId, courseId });
   await Promise.all([
     fs.unlink(upload.filePath).catch(() => {}),
-    fs.unlink(metaPath(token)).catch(() => {}),
+    removeMetadata(token),
   ]);
 }
 
@@ -184,7 +218,7 @@ export async function promoteFile(filePath) {
 export async function consumePendingUpload(token, { userId, courseId }) {
   const upload = await getPendingUpload(token, { userId, courseId });
   const filePath = await promoteFile(upload.filePath);
-  await fs.unlink(metaPath(token)).catch(() => {});
+  await removeMetadata(token);
   return {
     originalName: upload.originalName,
     mimeType: upload.mimeType,
@@ -205,8 +239,9 @@ export async function cleanupPendingUploads(maxAgeMs = PENDING_MAX_AGE_MS) {
 
   const knownFiles = new Set();
   for (const entry of entries) {
-    if (!entry.endsWith(".meta.json")) continue;
-    const token = entry.slice(0, -".meta.json".length);
+    const suffix = metadataSuffix(entry);
+    if (!suffix) continue;
+    const token = entry.slice(0, -suffix.length);
     const metadataPath = path.join(pendingDir, entry);
     let storedName = null;
     let expired = true;
@@ -221,12 +256,12 @@ export async function cleanupPendingUploads(maxAgeMs = PENDING_MAX_AGE_MS) {
       // Remove unreadable sidecars below.
     }
     if (!expired) continue;
-    await fs.unlink(metadataPath).catch(() => {});
+    await removeMetadata(token);
     if (storedName) {
       await fs.unlink(safePendingPath(token, storedName)).catch(() => {});
     } else if (TOKEN_PATTERN.test(token)) {
       const match = entries.find(
-        (name) => !name.endsWith(".meta.json") && name.startsWith(`${token}.`)
+        (name) => !metadataSuffix(name) && name.startsWith(`${token}.`)
       );
       if (match) await fs.unlink(path.join(pendingDir, match)).catch(() => {});
     }
@@ -234,7 +269,7 @@ export async function cleanupPendingUploads(maxAgeMs = PENDING_MAX_AGE_MS) {
 
   // Orphaned files (for example from an interrupted request) expire too.
   for (const entry of entries) {
-    if (entry.endsWith(".meta.json") || knownFiles.has(entry)) continue;
+    if (metadataSuffix(entry) || knownFiles.has(entry)) continue;
     const filePath = path.join(pendingDir, entry);
     try {
       const stat = await fs.stat(filePath);

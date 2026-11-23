@@ -102,7 +102,7 @@
         </div>
       </dl>
       {{#if (eq profile.role "learner")}}
-        <p class="mt-4 border-t border-slate-100 pt-3 text-[11px] leading-relaxed text-slate-400">HR manages employment details. Contact your administrator to update your department or position.</p>
+        <p class="mt-4 border-t border-slate-100 pt-3 text-[11px] leading-relaxed text-slate-400">Your administrator manages employment details. Contact them to update your department or position.</p>
       {{/if}}
     </div>
 
