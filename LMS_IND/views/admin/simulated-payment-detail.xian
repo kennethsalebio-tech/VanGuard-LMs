@@ -28,7 +28,7 @@
 
 <div class="mb-6 flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
   <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
-  <p class="text-xs leading-relaxed"><span class="font-bold">Not a real payment.</span> This record is excluded from live revenue and cannot be used as a receipt or proof of settlement. No course access was granted.</p>
+  <p class="text-xs leading-relaxed"><span class="font-bold">Not a real payment.</span> This record is excluded from live revenue and cannot be used as a receipt or proof of settlement. Successful simulations grant course access locally for the demo learner.</p>
 </div>
 
 <div class="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">

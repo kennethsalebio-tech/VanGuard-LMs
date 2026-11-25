@@ -2,9 +2,10 @@
  * Centralized simulated-payment service.
  *
  * All three demo methods (GCash-inspired, Maya-inspired, MariBank-inspired)
- * call the same server-side flow. The browser never supplies the amount and a
- * simulation never unlocks a course, updates CoursePurchases, touches the
- * VanguardLMS billing API, or counts as revenue.
+ * call the same server-side flow. The browser never supplies the amount. A
+ * successful simulation records a clearly marked demo-paid purchase, enrolls
+ * the learner, and unlocks the course locally. It never touches the
+ * VanguardLMS billing API or counts as collected revenue.
  */
 import crypto from "crypto";
 import { Op } from "sequelize";
@@ -12,10 +13,12 @@ import {
   sequelize,
   Course,
   CourseEnrollment,
+  CoursePurchase,
   SimulatedInvoice,
   SimulatedTransaction,
   User,
 } from "../models/index.js";
+import { ensureProgressRows, notify, recalcCourseProgress } from "./progressService.js";
 
 export class SimulatedPaymentError extends Error {
   constructor(message, { status = 400, code = "simulated_payment_error" } = {}) {
@@ -89,6 +92,7 @@ export function serializeTransaction(row) {
     reference: data.reference,
     invoiceId: data.invoiceId,
     invoiceReference: invoice?.reference || null,
+    courseId: invoice?.course?.id || null,
     paymentMethod: data.paymentMethod,
     paymentMethodName: method?.name || data.paymentMethod,
     amount: money(data.amount),
@@ -147,6 +151,117 @@ const invoiceIncludes = [
     ],
   },
 ];
+
+async function createDemoAccessRows({ invoice, transaction, dbTransaction }) {
+  const courseId = Number(invoice.courseId);
+  const reference = transaction.reference;
+  const amount = money(transaction.amount || invoice.amount);
+  const currency = transaction.currency || invoice.currency || "PHP";
+  const paidAt = invoice.simulatedAt || new Date();
+
+  // One paid access record is enough per learner and course. Older demo data
+  // can contain several simulated transactions for the same course, so reuse
+  // an existing paid purchase instead of creating a duplicate for each one.
+  let purchase = await CoursePurchase.findOne({
+    where: { userId: transaction.userId, courseId, status: "paid" },
+    transaction: dbTransaction,
+  });
+  let purchaseCreated = false;
+
+  if (!purchase) {
+    [purchase, purchaseCreated] = await CoursePurchase.findOrCreate({
+      where: { reference },
+      defaults: {
+        userId: transaction.userId,
+        courseId,
+        amount,
+        currency,
+        status: "paid",
+        provider: "demo",
+        receiptNumber: reference,
+        paidAt,
+        verifiedAt: new Date(),
+      },
+      transaction: dbTransaction,
+    });
+    if (!purchaseCreated && purchase.status !== "paid") {
+      await purchase.update(
+        {
+          status: "paid",
+          amount,
+          currency,
+          provider: "demo",
+          receiptNumber: reference,
+          paidAt,
+          verifiedAt: new Date(),
+        },
+        { transaction: dbTransaction }
+      );
+    }
+  }
+
+  const [enrollment, enrollmentCreated] = await CourseEnrollment.findOrCreate({
+    where: { userId: transaction.userId, courseId },
+    defaults: { source: "demo_purchase", status: "active" },
+    transaction: dbTransaction,
+  });
+
+  return {
+    userId: transaction.userId,
+    courseId,
+    courseTitle: invoice.course?.title || null,
+    purchaseCreated,
+    enrollmentCreated,
+    enrollmentId: enrollment.id,
+  };
+}
+
+async function finalizeDemoAccess(access) {
+  if (!access) return;
+  try {
+    await ensureProgressRows(access.userId, access.courseId);
+    await recalcCourseProgress(access.userId, access.courseId);
+  } catch (error) {
+    console.warn(
+      `[demo] Course ${access.courseId} unlocked but progress setup failed:`,
+      error.message
+    );
+  }
+
+  if (access.purchaseCreated || access.enrollmentCreated) {
+    await notify(access.userId, {
+      title: "Demo payment complete — course unlocked",
+      message: `Your simulated payment for ${access.courseTitle || "your course"} was recorded. The course is unlocked for this demo account.`,
+      type: "payment",
+      link: `/courses/${access.courseId}`,
+    });
+  }
+}
+
+/**
+ * Re-apply access for a simulated transaction. This is idempotent and repairs
+ * receipts created before simulated payments started unlocking courses.
+ */
+export async function grantDemoCourseAccess(transactionReference, userId) {
+  const transaction = await SimulatedTransaction.findOne({
+    where: { reference: String(transactionReference || "") },
+    include: transactionIncludes,
+  });
+  if (
+    !transaction ||
+    Number(transaction.userId) !== Number(userId) ||
+    transaction.status !== "simulated"
+  ) {
+    return null;
+  }
+
+  const invoice = transaction.invoice;
+  if (!invoice?.courseId) return null;
+
+  const access = await createDemoAccessRows({ invoice, transaction });
+  await finalizeDemoAccess(access);
+  return access;
+}
 
 const transactionIncludes = [
   {
@@ -363,6 +478,12 @@ export async function simulatePayment({ user, invoiceReference, methodSlug, subm
         { transaction: dbTransaction }
       );
 
+      const access = await createDemoAccessRows({
+        invoice,
+        transaction: transactionRow,
+        dbTransaction,
+      });
+
       const saved = await SimulatedTransaction.findByPk(transactionRow.id, {
         include: transactionIncludes,
         transaction: dbTransaction,
@@ -373,6 +494,7 @@ export async function simulatePayment({ user, invoiceReference, methodSlug, subm
         duplicate: false,
         transaction: serializeTransaction(saved),
         invoice: serializeInvoice(invoice),
+        access,
         submittedAmountIgnored:
           submittedAmount !== undefined &&
           submittedAmount !== null &&
@@ -394,10 +516,17 @@ export async function simulatePayment({ user, invoiceReference, methodSlug, subm
           })
         : null;
       if (existing) {
-        return { duplicate: true, transaction: serializeTransaction(existing), invoice: null };
+        const access = await grantDemoCourseAccess(existing.reference, user.id);
+        return { duplicate: true, transaction: serializeTransaction(existing), invoice: null, access };
       }
     }
     throw error;
+  }
+
+  if (outcome.access) {
+    await finalizeDemoAccess(outcome.access);
+  } else if (outcome.duplicate && outcome.transaction?.status === "simulated") {
+    outcome.access = await grantDemoCourseAccess(outcome.transaction.reference, user.id);
   }
 
   return outcome;

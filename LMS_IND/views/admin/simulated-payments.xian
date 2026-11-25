@@ -28,7 +28,7 @@
   <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
   <div>
     <p class="font-bold">Not real payments</p>
-    <p class="mt-0.5 text-xs leading-relaxed">A simulated transaction never settles an invoice, unlocks a course, or appears in collected revenue. Official receipts are not available for these rows.</p>
+    <p class="mt-0.5 text-xs leading-relaxed">A simulated transaction never settles a real invoice or appears in collected revenue. It does unlock the course locally for the learner. Official receipts are not available for these rows.</p>
   </div>
 </div>
 

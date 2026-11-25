@@ -57,7 +57,8 @@ router.get(
 );
 
 /* Clearly labeled simulation-only billing. It never calls the real billing
- * service, never creates a CoursePurchase, and never unlocks a course. */
+ * service or counts as revenue. A successful simulation records a demo-paid
+ * CoursePurchase and unlocks the selected course locally. */
 router.get("/billing", requireRole("learner"), ah(billingDashboardPage));
 router.post("/billing/invoices", requireRole("learner"), ah(createDemoInvoiceAction));
 router.get(

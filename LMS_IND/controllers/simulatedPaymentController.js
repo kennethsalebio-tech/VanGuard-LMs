@@ -15,6 +15,7 @@ import {
   getInvoiceForLearner,
   getLearnerBilling,
   getTransactionForLearner,
+  grantDemoCourseAccess,
   listDemoTransactions,
   serializeInvoice,
   simulatePayment,
@@ -127,7 +128,7 @@ export async function simulatePaymentAction(req, res) {
         entityId: result.transaction.id,
         detail: `${result.transaction.reference} · ${method.name} · invoice ${result.transaction.invoiceReference} · PHP ${result.transaction.amount.toFixed(2)}${result.submittedAmountIgnored ? " · client amount ignored" : ""}`,
       });
-      req.flash("success_msg", "Demo payment simulated. No real money moved.");
+      req.flash("success_msg", "Demo payment simulated and the course was unlocked. No real money moved.");
     } else {
       req.flash("info_msg", "This demo invoice already has a transaction; showing the existing result.");
     }
@@ -206,6 +207,15 @@ export async function failPaymentAction(req, res) {
 export async function paymentResultPage(req, res) {
   try {
     const transaction = await getTransactionForLearner(req.params.reference, req.user.id);
+    if (transaction.status === "simulated") {
+      // Repair older simulated receipts that were created before simulations
+      // granted course access, and keep duplicate submissions idempotent.
+      try {
+        await grantDemoCourseAccess(transaction.reference, req.user.id);
+      } catch (error) {
+        console.error("[demo] Could not grant course access:", error.message);
+      }
+    }
     return res.render("billing-result", {
       title:
         transaction.status === "simulated"

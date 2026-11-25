@@ -79,6 +79,17 @@ function execute(dbPath, sql, params = []) {
 const LMS_DB = process.env.LMS_DB || "data/lms.sqlite";
 const BILLING_DB = process.env.BILLING_DB || "../VanguardLMS/VanguardLMS/data/billing.sqlite";
 
+async function resetDemoAccess(userId, courseId) {
+  await execute(LMS_DB, "delete from LessonProgresses where userId = ? and courseId = ?", [userId, courseId]);
+  await execute(LMS_DB, "delete from CourseProgresses where userId = ? and courseId = ?", [userId, courseId]);
+  await execute(LMS_DB, "delete from CourseEnrollments where userId = ? and courseId = ?", [userId, courseId]);
+  await execute(
+    LMS_DB,
+    "delete from CoursePurchases where userId = ? and courseId = ? and provider = 'demo'",
+    [userId, courseId]
+  );
+}
+
 /* ------------------------------------------------------------- browser jar */
 
 function makeSession() {
@@ -330,7 +341,7 @@ const beforePay = await learner.fetch(`/courses/${paidCourseId}`);
 check("Creating a pending demo invoice does not unlock the course",
   !beforePay.text.includes("Continue learning") && beforePay.text.includes("Purchase course"));
 
-console.log("\n=== 8. Repeat clicks reuse the invoice; simulation does not unlock ===");
+console.log("\n=== 8. Repeat clicks reuse the invoice; simulation unlocks the course ===");
 const repeatToken = csrf((await learner.fetch("/profile")).text);
 const repeatPurchase = await learner.fetch(`/courses/${paidCourseId}/purchase`, {
   method: "POST",
@@ -362,10 +373,20 @@ check("Demo payment from the Purchase flow completes",
 check("Simulation stores the invoice amount and demo status",
   Number(directDemoRow?.amount) === 2250 && directDemoRow?.status === "simulated" &&
     directDemoRow?.paymentMode === "demo");
+const directDemoPurchase = (await query(
+  LMS_DB,
+  "select * from CoursePurchases where reference = ?",
+  [directDemoRow.reference]
+))[0];
 const afterDirectDemo = await learner.fetch(`/courses/${paidCourseId}`);
-check("Simulated payment does not grant course access",
-  !afterDirectDemo.text.includes("Continue learning") &&
-    afterDirectDemo.text.includes("Purchase course"));
+check("Simulated payment records a paid demo purchase",
+  directDemoPurchase?.status === "paid" && directDemoPurchase?.provider === "demo",
+  `${directDemoPurchase?.status} / ${directDemoPurchase?.provider}`);
+check("Simulated payment unlocks the course",
+  afterDirectDemo.text.includes("Continue learning") &&
+    afterDirectDemo.text.includes(">Paid</span>"));
+// Isolate the real-billing scenario below from the demo access just granted.
+await resetDemoAccess(buyerId, paidCourseId);
 
 console.log("\n=== 9. Existing verified billing still unlocks access ===");
 const realCheckout = await billingApi("POST", "/api/billing/checkout", {
@@ -695,9 +716,18 @@ const afterDemoPurchases = (await query(
   "select count(*) as total from CoursePurchases where userId = ? and courseId = ?",
   [demoInvoiceRow.userId, paidCourseId]
 ))[0].total;
-check("Simulation does not create a purchase or enrollment",
-  Number(afterDemoEnrollments) === Number(beforeDemoEnrollments) &&
-  Number(afterDemoPurchases) === Number(beforeDemoPurchases));
+const demoPurchase = (await query(
+  LMS_DB,
+  "select * from CoursePurchases where reference = ?",
+  [demoTxnRef]
+))[0];
+check("Simulation creates a paid demo purchase and enrollment",
+  Number(afterDemoEnrollments) === Number(beforeDemoEnrollments) + 1 &&
+  Number(afterDemoPurchases) === Number(beforeDemoPurchases) + 1 &&
+  demoPurchase?.status === "paid" && demoPurchase?.provider === "demo",
+  `enrollments ${beforeDemoEnrollments}→${afterDemoEnrollments}, purchases ${beforeDemoPurchases}→${afterDemoPurchases}`);
+check("Simulated purchase unlocks the course page",
+  (await existingLearner.fetch(`/courses/${paidCourseId}`)).text.includes("Continue learning"));
 check("Simulation is excluded from billing service revenue",
   (await query(BILLING_DB, "select count(*) as total from BillingTransactions where learnerId = ?", [demoInvoiceRow.userId]))[0].total === 0);
 
@@ -755,13 +785,16 @@ async function createAndPay(session, courseId, method) {
   });
   return { created, paid, reference, txn: paid.location?.split("/").pop() };
 }
+await resetDemoAccess(demoInvoiceRow.userId, paidCourseId);
 const mayaFlow = await createAndPay(existingLearner, paidCourseId, "maya");
 check("Maya-inspired demo payment completes", mayaFlow.paid.status === 302 &&
   (await existingLearner.fetch(mayaFlow.paid.location)).text.includes("Simulated payment successful"));
+await resetDemoAccess(demoInvoiceRow.userId, paidCourseId);
 const mariFlow = await createAndPay(existingLearner, paidCourseId, "maribank");
 check("MariBank-inspired demo payment completes", mariFlow.paid.status === 302 &&
   (await existingLearner.fetch(mariFlow.paid.location)).text.includes("Simulated payment successful"));
 
+await resetDemoAccess(demoInvoiceRow.userId, paidCourseId);
 const cancelCreated = await createDemoInvoice(existingLearner, paidCourseId);
 const cancelRef = cancelCreated.location?.split("/").pop();
 const cancelScreen = await existingLearner.fetch(`/billing/invoices/${cancelRef}/pay/gcash`);
@@ -802,6 +835,7 @@ const demoTotal = (await query(LMS_DB, "select count(*) as total from SimulatedT
 check("Demo ledger is separated by invoice", Number(demoTotal) === 5, `demo rows: ${demoTotal}`);
 
 // Keep the local database clean after the demo checks.
+await resetDemoAccess(demoInvoiceRow.userId, paidCourseId);
 await execute(
   LMS_DB,
   "delete from SimulatedTransactions where userId = ?",

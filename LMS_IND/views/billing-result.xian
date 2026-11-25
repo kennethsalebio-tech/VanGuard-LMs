@@ -11,7 +11,7 @@
     <svg class="mt-0.5 h-5 w-5 shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" /></svg>
     <div>
       <p class="text-sm font-bold">DEMO TRANSACTION — NOT A REAL PAYMENT</p>
-      <p class="mt-0.5 text-xs leading-relaxed">This record proves that the simulation flow works. No money was collected, no real invoice was settled, and no course was unlocked.</p>
+      <p class="mt-0.5 text-xs leading-relaxed">This record proves that the simulation flow works. No money was collected and no real invoice was settled; course access is granted only inside this demo.</p>
     </div>
   </div>
 
@@ -23,7 +23,7 @@
         </span>
         <p class="mt-4 text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-700">Simulation complete</p>
         <h1 class="mt-1 text-2xl font-extrabold tracking-tight text-navy-900 sm:text-3xl">Simulated payment successful</h1>
-        <p class="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-slate-500">The demo processor recorded your selected method. This does not represent a financial settlement.</p>
+        <p class="mx-auto mt-2 max-w-lg text-sm leading-relaxed text-slate-500">The demo processor recorded your selected method and unlocked this course in the LMS. This does not represent a financial settlement.</p>
         <div class="mt-4 inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-50 px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-sky-700">
           <span class="h-1.5 w-1.5 rounded-full bg-sky-500"></span> Status: SIMULATED
         </div>
@@ -105,19 +105,33 @@
             <span class="rounded-full bg-sky-50 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-sky-700">{{transaction.status}}</span>
           </dd>
         </div>
+        {{#if (eq transaction.status "simulated")}}
+          <div class="rounded-xl bg-emerald-50 px-3 py-2.5">
+            <dt class="text-[10px] font-bold uppercase tracking-wide text-emerald-700">Course access</dt>
+            <dd class="mt-1 font-semibold text-emerald-900">Paid (demo) · Unlocked</dd>
+          </div>
+        {{/if}}
       </dl>
 
       <div class="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-4 text-[11px] leading-relaxed text-slate-500">
         <p class="font-bold uppercase tracking-wide text-navy-900">DEMO RECEIPT — SIMULATED TRANSACTION</p>
-        <p class="mt-1">This document is not an official GCash, Maya, MariBank, bank, or government receipt. It cannot be used as proof of payment. The related course purchase remains unpaid and the course remains locked.</p>
+        <p class="mt-1">This document is not an official GCash, Maya, MariBank, bank, or government receipt and cannot be used as proof of payment. In this demo, the selected course has been unlocked locally and the demo purchase is marked paid; no real money changed hands.</p>
       </div>
 
       <div class="no-print mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
         <a href="/billing" class="flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">Return to Billing</a>
-        <button type="button" onclick="window.print()" class="flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+        <button type="button" onclick="window.print()" class="flex items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-semibold text-navy-900 transition hover:bg-slate-50">
           <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
           Print demo receipt
         </button>
+        {{#if (eq transaction.status "simulated")}}
+          {{#if transaction.courseId}}
+            <a href="/courses/{{transaction.courseId}}" class="flex items-center justify-center gap-2 rounded-xl bg-brand-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-700">
+              Open course
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+            </a>
+          {{/if}}
+        {{/if}}
       </div>
     </div>
   </section>
