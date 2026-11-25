@@ -1,6 +1,6 @@
     </main>
 
-    <footer class="app-footer border-t border-slate-200 bg-white px-6 py-5">
+    <footer class="app-footer border-t border-slate-200 bg-white px-4 py-5 sm:px-6 lg:px-8">
       <div class="mx-auto flex w-full max-w-[1440px] flex-col items-center justify-between gap-2 text-[11px] text-slate-400 sm:flex-row">
         <p>© {{formatDate "2026-01-01"}} Vanguard Learning · Integrated Learning Management System</p>
         <div class="flex items-center gap-4">

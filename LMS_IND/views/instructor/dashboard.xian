@@ -72,7 +72,7 @@
 </div>
 
 <div class="grid gap-6 xl:grid-cols-3">
-  <section class="xl:col-span-2">
+  <section class="min-w-0 xl:col-span-2">
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
         <h2 class="text-sm font-bold text-navy-900">Course performance</h2>
@@ -89,7 +89,7 @@
                   <span class="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide
                     {{#if (eq course.status "published")}}bg-emerald-50 text-emerald-700{{else if (eq course.status "archived")}}bg-slate-100 text-slate-500{{else}}bg-amber-50 text-amber-700{{/if}}">{{course.status}}</span>
                 </div>
-                <div class="mt-1.5 flex items-center gap-3 text-[11px] text-slate-400">
+                <div class="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-slate-400">
                   <span>{{enrolled}} learners</span>
                   <span>·</span>
                   <span>{{completed}} completed</span>
@@ -113,7 +113,7 @@
     </div>
   </section>
 
-  <aside class="space-y-6">
+  <aside class="min-w-0 space-y-6">
     <section class="rounded-2xl border border-slate-200 bg-white shadow-sm">
       <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
         <h2 class="text-sm font-bold text-navy-900">Needs attention</h2>

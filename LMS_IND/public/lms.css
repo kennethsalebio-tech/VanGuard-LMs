@@ -4,6 +4,154 @@ html {
 
 body {
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  overflow-wrap: break-word;
+}
+
+/* ------------------------------------------------------- shared UI pieces */
+
+/* Classes referenced by the public, auth and dashboard templates. They keep
+ * call-to-action buttons a consistent, touch-friendly size everywhere. */
+.ui-btn {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: 0.75rem;
+  padding: 0.65rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-align: center;
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease,
+    transform 150ms ease;
+}
+
+.ui-btn:active {
+  transform: translateY(1px);
+}
+
+.ui-btn-primary {
+  background-color: #0966d5;
+  color: #ffffff;
+  box-shadow: 0 12px 24px -18px rgba(9, 102, 213, 0.85);
+}
+
+.ui-btn-primary:hover {
+  background-color: #0757b8;
+}
+
+.ui-btn-secondary {
+  border: 1px solid #dbe4ef;
+  background: #ffffff;
+  color: #0b1b3a;
+}
+
+.ui-btn-secondary:hover {
+  border-color: #c3d3e6;
+  background: #f8fafc;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid #dbe7f5;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 0.3rem 0.7rem;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #0966d5;
+}
+
+.hero-shell {
+  background:
+    radial-gradient(ellipse at 12% 0%, rgba(219, 234, 254, 0.9), transparent 55%),
+    linear-gradient(180deg, #f8fbff 0%, #f4f8fc 100%);
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(to right, rgba(11, 27, 58, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(11, 27, 58, 0.045) 1px, transparent 1px);
+  background-size: 44px 44px;
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 80%);
+}
+
+/* ------------------------------------------------------ responsive safety */
+
+img,
+video,
+canvas,
+iframe {
+  max-width: 100%;
+}
+
+input,
+select,
+textarea,
+button {
+  max-width: 100%;
+}
+
+main,
+.app-shell {
+  min-width: 0;
+}
+
+/* Keep long identifiers (references, certificate codes, emails) inside their
+ * containers on narrow viewports. */
+.break-anywhere,
+.lesson-body dd,
+.lesson-body td {
+  overflow-wrap: anywhere;
+}
+
+.overflow-x-auto,
+.overflow-y-auto {
+  max-width: 100%;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Wide data tables keep readable columns on small screens and scroll inside
+ * their card instead of widening the page. At desktop width they fill the
+ * container again, so the desktop layout is unchanged. */
+@media (max-width: 1279px) {
+  .overflow-x-auto > table,
+  .overflow-y-auto > table {
+    min-width: 720px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .overflow-x-auto > table,
+  .overflow-y-auto > table {
+    min-width: 100%;
+  }
+}
+
+/* Converted lesson tables may be wide; let them scroll locally on phones. */
+@media (max-width: 767px) {
+  .lesson-body table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+.lesson-body pre {
+  max-width: 100%;
+  overflow-x: auto;
 }
 
 /* ------------------------------------------------------------ lesson body */
@@ -142,6 +290,7 @@ body {
 
 .field {
   width: 100%;
+  min-width: 0;
   border-radius: 0.65rem;
   border: 1px solid #cbd5e1;
   background: #ffffff;
